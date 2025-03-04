@@ -1,0 +1,86 @@
+[gd_scene load_steps=14 format=3 uid="uid://cjhfy8uvparuh"]
+
+[ext_resource type="Script" uid="uid://dhvdrjcl03wt5" path="res://maps/game_map.gd" id="1_bjbcw"]
+[ext_resource type="Script" uid="uid://dc0yukt27dlgv" path="res://maps/turn_scheduler.gd" id="2_0urrm"]
+[ext_resource type="Script" uid="uid://cyjtcd1at52jf" path="res://maps/grid/grid_definition.gd" id="2_x667m"]
+[ext_resource type="Script" uid="uid://3eau6y1bkren" path="res://maps/map_data.gd" id="3_o2o3g"]
+[ext_resource type="Script" uid="uid://b8j5oh3xp4dq8" path="res://maps/tiles/tile.gd" id="4_x1lou"]
+[ext_resource type="Script" uid="uid://db2ssgxtoyvkc" path="res://utils/helpers/actor_helper.gd" id="5_o2o3g"]
+[ext_resource type="Script" uid="uid://gwdytrhs2ox7" path="res://utils/helpers/map_helper.gd" id="6_7sqkw"]
+[ext_resource type="Script" uid="uid://ddtyejhovuhfe" path="res://utils/helpers/entity_action_handler.gd" id="6_lmtof"]
+[ext_resource type="Script" uid="uid://ceqviijurg0ix" path="res://utils/helpers/logger.gd" id="7_fxkst"]
+[ext_resource type="Script" uid="uid://fkh4barhh35" path="res://maps/tile_drawer.gd" id="9_14r2k"]
+[ext_resource type="PackedScene" uid="uid://bnys08k87vp0d" path="res://maps/generation/map_generator.tscn" id="10_x1lou"]
+
+[sub_resource type="Resource" id="Resource_7sqkw"]
+script = ExtResource("2_x667m")
+map_size = Vector2i(32, 32)
+cell_size = Vector2i(8, 8)
+metadata/_custom_type_script = "uid://cyjtcd1at52jf"
+
+[sub_resource type="Resource" id="Resource_lmtof"]
+script = ExtResource("3_o2o3g")
+grid_definition = SubResource("Resource_7sqkw")
+tile_data = Dictionary[Vector2i, ExtResource("4_x1lou")]({})
+metadata/_custom_type_script = "uid://3eau6y1bkren"
+
+[node name="GameMap" type="Node2D" node_paths=PackedStringArray("map_gen", "tile_drawer", "entity_holder", "actor_helper", "entity_action_handler", "map_helper", "logger", "turn_scheduler")]
+script = ExtResource("1_bjbcw")
+map_data = SubResource("Resource_lmtof")
+map_gen = NodePath("Generator")
+tile_drawer = NodePath("TileDrawer")
+entity_holder = NodePath("EntityHolder")
+actor_helper = NodePath("Helpers/ActorHelper")
+entity_action_handler = NodePath("Helpers/EntityActionHandler")
+map_helper = NodePath("Helpers/MapHelper")
+logger = NodePath("Helpers/Logger")
+turn_scheduler = NodePath("TurnScheduler")
+
+[node name="Helpers" type="Node" parent="."]
+
+[node name="ActorHelper" type="Node" parent="Helpers"]
+script = ExtResource("5_o2o3g")
+metadata/_custom_type_script = "uid://db2ssgxtoyvkc"
+
+[node name="EntityActionHandler" type="Node" parent="Helpers"]
+script = ExtResource("6_lmtof")
+metadata/_custom_type_script = "uid://ddtyejhovuhfe"
+
+[node name="MapHelper" type="Node" parent="Helpers"]
+script = ExtResource("6_7sqkw")
+metadata/_custom_type_script = "uid://gwdytrhs2ox7"
+
+[node name="Logger" type="Node" parent="Helpers"]
+script = ExtResource("7_fxkst")
+metadata/_custom_type_script = "uid://ceqviijurg0ix"
+
+[node name="TurnScheduler" type="Node" parent="."]
+script = ExtResource("2_0urrm")
+metadata/_custom_type_script = "uid://dc0yukt27dlgv"
+
+[node name="Generator" parent="." instance=ExtResource("10_x1lou")]
+visible = false
+generate_on_ready = false
+
+[node name="TileDrawer" type="Node2D" parent="."]
+script = ExtResource("9_14r2k")
+metadata/_edit_lock_ = true
+
+[node name="EntityHolder" type="Node2D" parent="."]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -77.0
+offset_top = -11.5
+offset_right = 77.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "YOU DIED RIP BOZO"

@@ -68,7 +68,7 @@ class _Task extends RefCounted:
 		return false
 
 	func ensure_stopped():
-		if thread != null:
+		if thread != null and thread.is_started():
 			thread.wait_to_finish()
 
 	func get_total_cells() -> int:

@@ -4,27 +4,49 @@ class_name Entity extends Node2D
 signal grid_position_changed(old_position: Vector2i, new_position: Vector2i)
 
 @export_group("References")
-@export var sprite: AnimatedSprite2D
+@export_group("")
 
-var entity_name: String = "Entity"
-var entity_desc: String
-## Entity location on the grid.
-var grid_position: Vector2i : set = _set_grid_position
+@export var entity_name: String = "Entity"
+@export var entity_desc: String
 
 ## Whether or not you can walk through this.
-var blocks_movement: bool = false
+@export var blocks_movement: bool = false
 ## Whether or not you can see through this.
-var blocks_vision: bool = false
+@export var blocks_vision: bool = false
 
+## Used to keep actors in order.
+var id: int = -1
+## Entity location on the grid.
+var grid_position: Vector2i : set = _set_grid_position
 ## Dictionary containing all components.
 var components: Dictionary[StringName, EComponent] = {}
 
 ## Visual component
 var graphics: Graphics
-
-
+var sprite
 
 var map_data: MapData
+
+
+
+func add_component(_name: StringName, _component: EComponent) -> Entity:
+	if not components.has(_name):
+		_component.entity = self
+		components[_name] = _component
+	
+	return self
+
+func has_component(_name: StringName) -> bool:
+	return components.has(_name)
+
+func get_component_or_null(_name: StringName) -> EComponent:
+	if not components.has(_name):
+		return null
+	
+	return components[_name]
+
+func remove_component(_name: StringName) -> void:
+	components.erase(_name)
 
 #region Save and Load
 func serialize() -> Dictionary:
@@ -41,6 +63,7 @@ func serialize() -> Dictionary:
 	
 	# Serialize everything at once
 	var data: Dictionary = {
+		"id": id,
 		"entity_name": entity_name,
 		"entity_desc": entity_desc,
 		
@@ -57,6 +80,8 @@ func serialize() -> Dictionary:
 	return data
 
 func deserialize(data: Dictionary) -> void:
+	self.id = data["id"]
+	
 	self.entity_name = data["entity_name"]
 	self.entity_desc = data["entity_desc"]
 	
@@ -74,18 +99,38 @@ func deserialize(data: Dictionary) -> void:
 	for i: int in range(temp_components.size()):
 		var key: String = temp_components.keys()[i]
 		
-		var component: EComponent = EComponent.Lookup[key].duplicate(true)
-		component.deserialize(temp_components[key])
-		components[key] = component
+		if key == Components.CONSUMABLE:
+			var consumable_data: Dictionary = temp_components[key]
+			var consumable: Consumable = Consumable.Index[consumable_data["name"]].duplicate(true)
+			add_component(key, consumable)
+		else:
+			var component: EComponent = EComponent.Lookup[key].duplicate(true)
+			component.deserialize(temp_components[key])
+			add_component(key, component)
 	
 	# Visuals
 	self.graphics = Graphics.new()
 	self.graphics.deserialize(data["graphics"])
-	sprite.modulate = self.graphics.modulate
-	sprite.sprite_frames = load(graphics.sprite_path)
-	sprite.play()
+	
+	if graphics.texture is SpriteFrames:
+		sprite = AnimatedSprite2D.new()
+		sprite.centered = false
+		sprite.modulate = graphics.modulate
+		sprite.sprite_frames = graphics.texture
+		add_child(sprite)
+		sprite.play()
+	elif graphics.texture is Texture2D:
+		sprite = Sprite2D.new()
+		sprite.centered = false
+		sprite.modulate = graphics.modulate
+		sprite.texture = graphics.texture
+		add_child(sprite)
 
 #endregion
+
+func _ready() -> void:
+	if id == -1:
+		self.id = Time.get_ticks_msec()
 
 func _set_grid_position(val: Vector2i) -> void:
 	var old_pos = grid_position

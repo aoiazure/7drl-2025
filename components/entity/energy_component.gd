@@ -3,6 +3,9 @@ class_name Energy extends EComponent
 var required_to_act: int
 var current_energy: int
 
+func can_act() -> bool:
+	return current_energy >= required_to_act
+
 #region Saving and Loading
 func serialize() -> Dictionary:
 	var data:= super()

@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://bn5824lkt8n6m"]
+
+[ext_resource type="Script" uid="uid://8yt301nfic2h" path="res://entities/subtypes/actor.gd" id="1_gvv6q"]
+
+[node name="Actor" type="Node2D"]
+script = ExtResource("1_gvv6q")
+entity_name = "Actor"
+metadata/_custom_type_script = "uid://8yt301nfic2h"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+centered = false

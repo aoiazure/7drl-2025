@@ -5,7 +5,7 @@ signal actors_changed
 @export var grid_definition: GridDefinition
 
 var rng_seed: int
-var tile_data: Dictionary[Vector2i, Tile] = {}
+@export var tile_data: Dictionary[Vector2i, Tile] = {}
 var actors: Array[Actor] = []
 var player: Actor
 
@@ -13,7 +13,7 @@ var player: Actor
 #var cursor_rect: Rect2i
 #var cursor_in_range: bool = false
 
-
+var _all_walkable_cells: Array[Vector2i] = []
 
 func add_entity_to_tile_at_position(entity: Entity, position: Vector2i) -> void:
 	entity.grid_position = position
@@ -22,7 +22,10 @@ func add_entity_to_tile_at_position(entity: Entity, position: Vector2i) -> void:
 	if entity is Actor:
 		actors.append(entity)
 		actors_changed.emit()
+	
+	ActorHelper.instance.set_up_astar()
 
+## Remove an entity from the tile.
 func remove_entity(entity: Entity) -> void:
 	tile_data[entity.grid_position].entities.erase(entity)
 	
@@ -30,6 +33,30 @@ func remove_entity(entity: Entity) -> void:
 		actors.erase(entity)
 		actors_changed.emit()
 
+
+## Return the Tile at the coordinates provided, or null if it doesn't exist.
+func get_tile_xy(x: int, y: int) -> Tile:
+	var vec:= Vector2i(x, y)
+	if not tile_data.has(vec):
+		return null
+	
+	return tile_data[vec]
+
+## Return the Tile at the vector provided, or null if it doesn't exist.
+func get_tile(vec: Vector2i) -> Tile:
+	if not tile_data.has(vec):
+		return null
+	
+	return tile_data[vec]
+
+## Returns an array of all grid positions that can be walked on.
+func get_all_walkable_cells_from_position(grid_position: Vector2i, refresh: bool = false) -> Array[Vector2i]:
+	if refresh:
+		_all_walkable_cells = FloodFill.calculate(
+			self, grid_position, Tile.Names.Floor
+		)
+	
+	return _all_walkable_cells
 
 
 #region Saving and Loading

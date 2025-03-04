@@ -11,6 +11,11 @@ func execute() -> EActionResult:
 	if not result.succeeded:
 		result.error_message = "You cannot move there."
 	
+	var stamina: Stamina = actor.get_component_or_null(Components.STAMINA)
+	if stamina:
+		if stamina.cur_stamina < stamina.max_stamina:
+			stamina.increment_recovery(actor, 1)
+	
 	return result
 
 

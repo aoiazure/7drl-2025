@@ -5,7 +5,7 @@ extends EController
 func get_action(_actor: Actor) -> EAction:
 	return null
 
-func on_set_active() -> void:
+func on_set_active(_actor: Actor) -> void:
 	pass
 
 #region Saving and Loading
@@ -18,6 +18,6 @@ func serialize() -> Dictionary:
 	data.merge(new_data, true)
 	return data
 
-func deserialize(_data: Dictionary) -> void:
-	pass
+func deserialize(data: Dictionary) -> void:
+	super(data)
 #endregion

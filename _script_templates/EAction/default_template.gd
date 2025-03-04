@@ -1,4 +1,4 @@
-extends EAction
+class_name _CLASS_ extends EAction
 
 
 

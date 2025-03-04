@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://dbmbqfvtsj353"]
+
+[ext_resource type="Texture2D" uid="uid://dykb6b63vovy5" path="res://assets/sprites/hitbox/hitbox_marker.png" id="1_3n4r1"]
+
+[resource]
+atlas = ExtResource("1_3n4r1")
+region = Rect2(0, 0, 8, 8)

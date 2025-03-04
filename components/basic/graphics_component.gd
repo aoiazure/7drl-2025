@@ -18,6 +18,9 @@ func serialize() -> Dictionary:
 
 func deserialize(data: Dictionary) -> void:
 	self.sprite_path = data["sprite_path"]
+	if not self.sprite_path.is_empty():
+		texture = load(sprite_path)
+	
 	self.modulate = JSON.to_native(data["modulate"])
 	self.render_order = data["render_order"]
 #endregion

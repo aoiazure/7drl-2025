@@ -2,10 +2,7 @@
 
 [ext_resource type="Script" uid="uid://8yt301nfic2h" path="res://entities/subtypes/actor.gd" id="1_gvv6q"]
 
-[node name="Actor" type="Node2D" node_paths=PackedStringArray("sprite")]
+[node name="Actor" type="Node2D"]
 script = ExtResource("1_gvv6q")
-sprite = NodePath("Sprite")
+entity_name = "Actor"
 metadata/_custom_type_script = "uid://8yt301nfic2h"
-
-[node name="Sprite" type="AnimatedSprite2D" parent="."]
-centered = false

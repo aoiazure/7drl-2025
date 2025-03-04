@@ -1,9 +1,15 @@
 class_name EController extends Resource
 
 static var Lookup: Dictionary[StringName, EController] = {
+	"EDummyController": EDummyController.new(),
 	"ECorpseController": ECorpseController.new(),
 	
+	"EAlertController": EAlertController.new(),
+	"EMeleeController": EMeleeController.new(),
+	
 	"PMoveController": PMoveController.new(),
+	
+	"HitboxController": HitboxController.new(),
 }
 
 
@@ -11,7 +17,7 @@ static var Lookup: Dictionary[StringName, EController] = {
 func get_action(_actor: Actor) -> EAction:
 	return null
 
-func on_set_active() -> void:
+func on_set_active(_actor: Actor) -> void:
 	pass
 
 #region Saving and Loading

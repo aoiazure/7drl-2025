@@ -17,13 +17,13 @@ func get_action(actor: Actor) -> EAction:
 	
 	# Movement time
 	if Input.is_action_just_pressed(&"move_up"):
-		action = EABumpAction.new(actor, Vector2i.UP)
+		action = EABump.new(actor, Vector2i.UP)
 	elif Input.is_action_just_pressed(&"move_down"):
-		action = EABumpAction.new(actor, Vector2i.DOWN)
+		action = EABump.new(actor, Vector2i.DOWN)
 	elif Input.is_action_just_pressed(&"move_left"):
-		action = EABumpAction.new(actor, Vector2i.LEFT)
+		action = EABump.new(actor, Vector2i.LEFT)
 	elif Input.is_action_just_pressed(&"move_right"):
-		action = EABumpAction.new(actor, Vector2i.RIGHT)
+		action = EABump.new(actor, Vector2i.RIGHT)
 	
 	elif Input.is_action_just_pressed(&"wait"):
 		action = EARest.new(actor)
@@ -46,7 +46,7 @@ func get_action(actor: Actor) -> EAction:
 	
 	return action
 
-func on_set_active() -> void:
+func on_set_active(_actor: Actor) -> void:
 	pass
 
 #region Saving and Loading

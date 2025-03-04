@@ -1,5 +1,10 @@
 class_name Tile extends Resource
 
+const Names: Dictionary[StringName, String] = {
+	"Floor": "floor",
+	"Wall": "wall",
+	"Tree": "tree",
+}
 
 ## Definition that tells what this tile actually is.
 var definition: TileDefinition
@@ -26,14 +31,32 @@ func deserialize(data: Dictionary) -> void:
 	self.definition.deserialize(data["definition"])
 	
 	var _parsed = JSON.parse_string(data["entities"])
-	#printt("Tile parsed:", _parsed)
 	var _entities: Array[Entity] = []
 	for _save_data: Dictionary in _parsed:
-		var e: Entity = Entity.new()
-		e.deserialize(_save_data)
-		_entities.append(e)
+		if _save_data.has("type"):
+			match _save_data["type"]:
+				"Actor":
+					var a: Actor = Actor.ACTOR_SCENE.instantiate()
+					a.deserialize(_save_data)
+					_entities.append(a)
+				"Hitbox":
+					var h: Hitbox = Hitbox.HITBOX_SCENE.instantiate()
+					h.deserialize(_save_data)
+					_entities.append(h)
+				"Item":
+					var i: Item = Item.ITEM_SCENE.instantiate()
+					i.deserialize(_save_data)
+					_entities.append(i)
+				# Generic entity
+				_:
+					var e: Entity = Entity.new()
+					e.deserialize(_save_data)
+					_entities.append(e)
 	
 	self.entities = _entities
+
+
+
 #endregion
 
 ## Sort the list of entities by render order.
@@ -65,6 +88,7 @@ func is_walkable() -> bool:
 	var is_possible:= false
 	if not definition.is_walkable:
 		return false
+	
 	if entities.is_empty():
 		is_possible = true
 	else:
@@ -77,6 +101,8 @@ func is_walkable() -> bool:
 	
 	return is_possible
 
+func is_transparent() -> bool:
+	return definition.is_transparent
 
 
 func add_entity(entity: Entity) -> void:
@@ -107,12 +133,10 @@ func _to_string() -> String:
 
 static func create(_definition: TileDefinition) -> Tile:
 	var t:= Tile.new()
-	t.definition = TileDefinition.create(
-		_definition.name, 
-		_definition.graphic.sprite_path,
-		_definition.graphic.render_order,
-		_definition.graphic.modulate,
-	)
+	var td:= TileDefinition.new()
+	td.deserialize(_definition.serialize())
+	t.definition = td
+	
 	return t
 
 

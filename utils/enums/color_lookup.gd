@@ -1,4 +1,4 @@
-class_name CLookup
+class_name ColorLookup
 
 const INVALID:= Color.DARK_RED
 const IMPOSSIBLE:= Color.DARK_RED

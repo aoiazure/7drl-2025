@@ -5,21 +5,7 @@ static var instance: MapHelper
 
 var map_data: MapData
 
-static func spawn(entity_factory: Entity, position: Vector2i) -> Entity:
-	#var clone: Entity = Entity.create('', '', Color.WHITE)
-	#if entity_factory is Actor:
-		## clone actor
-		#clone = (entity_factory as Actor).clone()
-	#elif entity_factory is Item:
-		## clone item
-		#clone = (entity_factory as Item).clone()
-	#else:
-	# clone base entity
-	#clone = entity_factory.clone()
-	
-	var clone = entity_factory.clone()
-	instance.map_data.add_entity_to_tile_at_position(clone, position)
-	return clone
+
 
 ##
 static func place(entity: Entity, position: Vector2i, data: MapData = instance.map_data) -> void:
@@ -47,8 +33,9 @@ static func get_all_actors() -> Array[Actor]:
 ## Return the first actor at a specific position.
 static func get_actor_at_position(position: Vector2i) -> Actor:
 	var actor: Actor = null
-	var tile: Tile = instance.map_data.data[position]
+	var tile: Tile = instance.map_data.tile_data[position]
 	tile.sort_by_render(true)
+	
 	for e: Entity in tile.entities:
 		if e is Actor:
 			actor = (e as Actor)
@@ -94,7 +81,7 @@ static func get_mouse_grid_position() -> Vector2i:
 
 ## Return the tile at the specific location.
 static func get_tile_at_position(position: Vector2i) -> Tile:
-	return instance.map_data.data[position]
+	return instance.map_data.tile_data[position]
 
 ## Clamp a position to the map boundaries.
 static func clamp_to_map_position(position: Vector2i) -> Vector2i:

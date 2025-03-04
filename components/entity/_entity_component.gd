@@ -3,7 +3,16 @@ class_name EComponent extends Resource
 
 ##
 static var Lookup: Dictionary[StringName, EComponent] = {
-	Components.Energy: Energy.new(),
+	Components.ENERGY: Energy.new(),
+	Components.FIGHTER: Fighter.new(),
+	Components.STAMINA: Stamina.new(),
+	Components.MANA: Mana.new(),
+	
+	Components.AFFINITY: Affinity.new(),
+	Components.FOV: Fov.new(),
+	Components.INVENTORY: Inventory.new(),
+	
+	Components.CONSUMABLE: Consumable.new(),
 }
 
 var entity: Entity

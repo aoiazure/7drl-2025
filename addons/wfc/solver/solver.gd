@@ -204,11 +204,11 @@ func _continue_without_backtracking():
 
 func _try_backtrack() -> bool:
 	if settings.backtracking_limit > 0 and backtracking_count > settings.backtracking_limit:
-		print_debug(
-			'Backtracking limit exceeded after ',
-			backtracking_count,
-			' attempt(s), restarting from best state without backtracking',
-		)
+		#print_debug(
+			#'Backtracking limit exceeded after ',
+			#backtracking_count,
+			#' attempt(s), restarting from best state without backtracking',
+		#)
 
 		_continue_without_backtracking()
 
@@ -217,18 +217,18 @@ func _try_backtrack() -> bool:
 	current_state = current_state.backtrack(problem)
 
 	if current_state == null:
-		print_debug(
-			'Backtracking failed completely after ',
-			backtracking_count,
-			' attempt(s)',
-		)
+		#print_debug(
+			#'Backtracking failed completely after ',
+			#backtracking_count,
+			#' attempt(s)',
+		#)
 
 		if not settings.require_backtracking:
-			print_debug('Restarting from best state without backtracking')
+			#print_debug('Restarting from best state without backtracking')
 
 			_continue_without_backtracking()
 		else:
-			print_debug('Backtracking is required but failed - terminating with failure')
+			#print_debug('Backtracking is required but failed - terminating with failure')
 			return true
 
 	backtracking_count += 1

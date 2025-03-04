@@ -6,14 +6,17 @@ static var instance: ActorHelper
 var map_data: MapData : 
 	set(val):
 		map_data = val
-		#set_up_astar()
+		map_data.actors_changed.connect(set_up_astar)
 
-var astar_grid: AStarGrid2D
-
+var astar: AStarGrid2D
+var id_count: int = 0
 
 static func get_movement_blocking_entity(position: Vector2i) -> Entity:
 	var map: MapData = instance.map_data
 	if not map.grid_definition.is_within_bounds(position):
+		return null
+	
+	if not map.tile_data.has(position):
 		return null
 	
 	var tile: Tile = map.tile_data[position]
@@ -28,8 +31,9 @@ static func get_movement_blocking_entity(position: Vector2i) -> Entity:
 	
 	return entity
 
-
-static func get_actor_at_position(position: Vector2i) -> Actor:
+## Returns an Actor at a specific grid position.[br]
+## Returns null if there are none, or the actor is in the exclude array.
+static func get_actor_at_position(position: Vector2i, exclude: Array[Actor] = []) -> Actor:
 	var map:= instance.map_data
 	if not map.grid_definition.is_within_bounds(position):
 		return null
@@ -41,6 +45,9 @@ static func get_actor_at_position(position: Vector2i) -> Actor:
 	var actor: Actor = null
 	for e: Entity in tile.entities:
 		if e is Actor:
+			if e in exclude:
+				continue
+			
 			actor = e
 			# Keep looking just in case it's a corpse.
 			if actor.controller is not ECorpseController:
@@ -49,29 +56,32 @@ static func get_actor_at_position(position: Vector2i) -> Actor:
 	return actor
 
 
-static func get_navigation_path_to(from_position: Vector2i, to_position: Vector2i, refresh: bool = false) -> Array[Vector2i]:
+## Returns an Array[Vector2i].
+static func get_navigation_path_to(from_position: Vector2i, to_position: Vector2i, 
+		refresh: bool = false, allow_partial: bool = false) -> Array[Vector2i]:
 	if refresh:
 		instance.set_up_astar()
 	
-	return instance.astar_grid.get_id_path(from_position, to_position)
-
+	return instance.astar.get_id_path(from_position, to_position, allow_partial)
 
 
 
 func set_up_astar() -> void:
-	astar_grid = AStarGrid2D.new()
-	astar_grid.region = Rect2i(Vector2i.ZERO, map_data.grid_definition.map_size)
-	astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	astar = AStarGrid2D.new()
+	astar.region = Rect2i(Vector2i.ZERO, map_data.grid_definition.map_size)
+	astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 	
-	astar_grid.update()
+	astar.update()
 	
-	for coord: Vector2i in map_data.data:
+	for coord: Vector2i in map_data.tile_data:
 		var blocker:= get_movement_blocking_entity(coord)
 		if blocker:
 			if blocker is Actor:
-				astar_grid.set_point_weight_scale(coord, 3)
+				astar.set_point_weight_scale(coord, 3)
 			else:
-				astar_grid.set_point_solid(coord)
+				astar.set_point_solid(coord)
+		else:
+			astar.set_point_solid(coord, not map_data.get_tile(coord).is_walkable())
 
 func _ready() -> void:
 	instance = self

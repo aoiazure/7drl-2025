@@ -21,7 +21,7 @@ var require_backtracking: bool = false
 ## incomplete solution.
 ## [br]
 ## When set to [code]0[/code] or negative value, the solver will backtrack as much as possible,
-## in worst case brute-forcing all possible cell configurations.
+## in worst case brute-forcing all possible cell configurations. 
 @export
 var backtracking_limit: int = -1
 

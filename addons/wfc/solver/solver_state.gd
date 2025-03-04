@@ -97,7 +97,7 @@ func set_domain(cell_id: int, domain: WFCBitSet, entropy: int = -1) -> bool:
 	var only_bit: int = domain.get_only_set_bit()
 
 	if only_bit == WFCBitSet.ONLY_BIT_NO_BITS_SET:
-		print_stack()
+		#print_stack()
 		_store_solution(cell_id, CELL_SOLUTION_FAILED)
 		entropy = 0
 		should_backtrack = true
