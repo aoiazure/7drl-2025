@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://2d6gf428ymsa"]
+
+[ext_resource type="Script" uid="uid://w3idgnh35r1d" path="res://entities/subtypes/campfire.gd" id="1_ml1vq"]
+[ext_resource type="Texture2D" uid="uid://dqjytnl7lfb3n" path="res://assets/sprites/tiles/tile_campfire.tres" id="2_v1n8a"]
+
+[node name="Campfire" type="Node2D" node_paths=PackedStringArray("_sprite")]
+script = ExtResource("1_ml1vq")
+_sprite = NodePath("Sprite2D")
+entity_name = "Campfire"
+blocks_movement = true
+metadata/_custom_type_script = "uid://8yt301nfic2h"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 0.27, 0, 1)
+texture = ExtResource("2_v1n8a")

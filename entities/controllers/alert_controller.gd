@@ -3,6 +3,9 @@ class_name EAlertController extends EController
 
 
 func get_action(actor: Actor) -> EAction:
+	if not actor.visible:
+		return EARest.new(actor)
+	
 	var fov:= actor.get_component_or_null(Components.FOV)
 	fov.update_fov(actor.map_data, actor.grid_position)
 	

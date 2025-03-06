@@ -1,0 +1,67 @@
+[gd_resource type="Theme" load_steps=15 format=3 uid="uid://bk5tm42l438d3"]
+
+[ext_resource type="FontFile" uid="uid://t2nfhrp4jlq8" path="res://assets/theming/fonts/monogram-extended.ttf" id="1_hrbfq"]
+[ext_resource type="StyleBox" uid="uid://2g6s1tnxxk5g" path="res://assets/theming/panel_plain.tres" id="1_s7k83"]
+[ext_resource type="StyleBox" uid="uid://hrmtrqhqvr00" path="res://assets/theming/buttons/button_focus.tres" id="1_wrk6t"]
+[ext_resource type="StyleBox" uid="uid://dxa8nnsg3t7d3" path="res://assets/theming/buttons/button_hover.tres" id="2_vwh12"]
+[ext_resource type="StyleBox" uid="uid://coph2jimqf5s4" path="res://assets/theming/buttons/button_normal.tres" id="3_yvhsf"]
+[ext_resource type="Texture2D" uid="uid://cx3vsb3mf7h5g" path="res://assets/sprites/minimal_8_base_v2_1-bit.png" id="4_vwh12"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x3n7b"]
+bg_color = Color(0.598309, 0.598309, 0.598309, 0.588235)
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wj5qj"]
+bg_color = Color(0.598309, 0.598309, 0.598309, 0.196078)
+border_width_bottom = 1
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yvhsf"]
+atlas = ExtResource("4_vwh12")
+region = Rect2(192, 96, 8, 8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vwh12"]
+content_margin_left = 4.0
+bg_color = Color(0.2, 0.192157, 0.14902, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yvhsf"]
+content_margin_left = 4.0
+bg_color = Color(0.180023, 0.172977, 0.133391, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qws5f"]
+content_margin_left = 4.0
+bg_color = Color(0.201559, 0.190236, 0.150451, 1)
+corner_detail = 1
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vwh12"]
+atlas = ExtResource("4_vwh12")
+region = Rect2(184, 88, 8, 8)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qws5f"]
+atlas = ExtResource("4_vwh12")
+region = Rect2(184, 80, 8, 8)
+filter_clip = true
+
+[resource]
+default_font = ExtResource("1_hrbfq")
+default_font_size = 8
+Button/styles/focus = ExtResource("1_wrk6t")
+Button/styles/hover = ExtResource("2_vwh12")
+Button/styles/normal = ExtResource("3_yvhsf")
+LineEdit/font_sizes/font_size = 8
+LineEdit/styles/focus = SubResource("StyleBoxFlat_x3n7b")
+LineEdit/styles/normal = SubResource("StyleBoxFlat_wj5qj")
+OptionButton/icons/arrow = SubResource("AtlasTexture_yvhsf")
+OptionButton/styles/focus = SubResource("StyleBoxFlat_vwh12")
+OptionButton/styles/hover = SubResource("StyleBoxFlat_yvhsf")
+OptionButton/styles/normal = SubResource("StyleBoxFlat_qws5f")
+PanelContainer/styles/panel = ExtResource("1_s7k83")
+PopupMenu/font_sizes/font_size = 8
+PopupMenu/font_sizes/title_font_size = 8
+PopupMenu/icons/radio_checked = SubResource("AtlasTexture_vwh12")
+PopupMenu/icons/radio_unchecked = SubResource("AtlasTexture_qws5f")

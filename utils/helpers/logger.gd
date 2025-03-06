@@ -29,8 +29,9 @@ static func log(message: String, also_console: bool = false, console_only: bool 
 	label.fit_content = true
 	label.scroll_active = false
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	label.custom_minimum_size = Vector2i(100, 8)
+	label.custom_minimum_size = Vector2i(100, 5)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	label.text = message
 	instance.log_container.add_child(label)

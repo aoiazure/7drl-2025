@@ -1,3 +1,8 @@
-class_name SaveManager extends Node
+extends Node
+
+var player_data: Actor
+
+
+
 
 

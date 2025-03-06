@@ -20,23 +20,23 @@ var current_time_to_kill: int :
 			spr_countdown.frame = clampi(val, 0, 19)
 
 
-static func create_hitbox(_time_to_kill: int, _power: int, affiliation:= Affinity.Affiliation.NONE) -> Hitbox:
+static func create_hitbox(_time_to_kill: int, _power: int, _speed: int, affiliation:= Affinity.Affiliation.NONE) -> Hitbox:
 	var h: Hitbox = HITBOX_SCENE.instantiate()
 	h.time_to_kill = _time_to_kill
-	h.add_component(Components.FIGHTER, Fighter.create(0, 0, _power))
+	h.add_component(Components.FIGHTER, Fighter.create(_power, 0, 0, 0, 0))
 	h.add_component(Components.AFFINITY, Affinity.create(affiliation))
-	h.add_component(Components.ENERGY, Energy.create(15))
+	h.add_component(Components.ENERGY, Energy.create(_speed, 3))
 	
 	return h
 
 func _ready() -> void:
 	super()
 	
-	graphics = Graphics.create(
+	add_component(Components.GRAPHICS, Graphics.create(
 		"res://assets/sprites/hitbox/texture_hitbox.tres",
 		RenderOrder.HITBOX,
 		ColorLookup.DAMAGE_VAL
-	)
+	))
 	
 	self.blocks_movement = false
 	self.blocks_vision = false

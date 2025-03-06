@@ -4,16 +4,15 @@ var target_entity: Entity
 var excluded: Array[Actor] = []
 
 func execute() -> EActionResult:
+	## Sanity checking
 	var fighter: Fighter = actor.get_component_or_null(Components.FIGHTER)
 	if not is_instance_valid(fighter):
-		return EActionResult.new(false, null, "This actor does not have a fighter component.")
+		return EActionResult.new(false, null, "You do not have a fighter component.")
 	
 	var stamina: Stamina = actor.get_component_or_null(Components.STAMINA)
 	if stamina:
 		if not stamina.spend(1):
-			return EActionResult.new(false, null, "This actor does not have %s stamina to spend." % 1)
-	
-	var power: int = fighter.power
+			return EActionResult.new(false, null, "You do not have %s stamina to spend." % 1)
 	
 	var target_actor: Actor = ActorHelper.get_actor_at_position(direction, excluded)
 	if not target_actor:
@@ -21,11 +20,22 @@ func execute() -> EActionResult:
 	
 	var target_fighter: Fighter = target_actor.get_component_or_null(Components.FIGHTER)
 	if not target_fighter:
-		return EActionResult.new(false, null, "The target actor does not have a fighter component.") 
+		return EActionResult.new(false, null, "The target does not have a fighter component.") 
+	
+	## Damage calculation
+	var power: int = fighter.get_stat(Stats.BODY)
+	var equipment: Equipment = actor.get_component_or_null(Components.EQUIPMENT)
+	if equipment:
+		## TODO: equipment in melee combat
+		pass
+	else:
+		# Fist damage :)
+		power += 1
 	
 	#var target_defense: int = target_actor.fighter.armor
 	#var damage: int = maxi(0, power - target_defense)
 	var damage: int = maxi(0, power)
+	## Logging.
 	var attack_desc: String = "%s attacks %s" % [
 		actor.entity_name.capitalize(), target_actor.entity_name.capitalize(),
 	]
@@ -44,6 +54,8 @@ func execute() -> EActionResult:
 
 func undo() -> EActionResult:
 	return null
+
+
 
 func _init(_actor: Actor, _direction: Vector2i, _excluded: Array[Actor] = []) -> void:
 	actor = _actor

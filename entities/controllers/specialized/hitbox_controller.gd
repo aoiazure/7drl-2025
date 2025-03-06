@@ -32,7 +32,7 @@ func deserialize(data: Dictionary) -> void:
 class HitboxAction extends EAction:
 	func execute() -> EActionResult:
 		(actor as Hitbox).current_time_to_kill -= 1
-		Logger.log("%s counts down to %s." % [actor.entity_name, actor.current_time_to_kill], true, true)
+		#Logger.log("%s counts down to %s." % [actor.entity_name, actor.current_time_to_kill], true, true)
 		return EActionResult.new(true)
 
 	func undo() -> EActionResult:
@@ -46,7 +46,7 @@ class HitboxAttack extends EAWithDirection:
 	
 	func execute() -> EActionResult:
 		var fighter: Fighter = actor.get_component_or_null(Components.FIGHTER)
-		var power: int = fighter.power
+		var power: int = fighter.get_stat(Stats.BODY)
 		
 		actor.queue_free()
 		actor.map_data.remove_entity(actor)

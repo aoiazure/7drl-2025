@@ -8,16 +8,19 @@ var affiliation: Affinity.Affiliation
 
 
 func execute() -> EActionResult:
+	var energy: Energy = actor.get_component_or_null(Components.ENERGY)
+	var speed: int = 95
+	if energy:
+		energy.current_energy = -10
+		speed = ceili(energy.speed * 1.1)
+	
 	for grid_position: Vector2i in all_grid_positions:
-		var hitbox:= Hitbox.create_hitbox(time_to_kill, 1, self.affiliation)
+		var hitbox:= Hitbox.create_hitbox(time_to_kill, 1, speed, self.affiliation)
 		hitbox.map_data = actor.map_data
 		actor.map_data.add_entity_to_tile_at_position(hitbox, grid_position)
 		actor.reset_physics_interpolation()
 	
 	Logger.log("Created %s hitboxes!" % all_grid_positions.size(), true, true)
-	var energy: Energy = actor.get_component_or_null(Components.ENERGY)
-	if energy:
-		energy.current_energy = -10
 	return EActionResult.new(true)
 
 func undo() -> EActionResult:

@@ -18,6 +18,9 @@ func execute() -> EActionResult:
 	
 	# Remove it from the world
 	tile.remove_entity(item)
+	actor.map_data.remove_entity(item)
+	item.get_parent().remove_child(item)
+	item.grid_position = Vector2i(-1, -1)
 	# Log it
 	if actor.is_player:
 		Logger.log("You picked up the %s." % item.entity_name)

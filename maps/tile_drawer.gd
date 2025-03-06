@@ -25,8 +25,8 @@ func _draw() -> void:
 			continue
 		
 		var tile: Tile = map_data.get_tile(key)
-		var graphic:= tile.definition.graphic
-		if not is_instance_valid(graphic.texture):
+		var graphics:= tile.definition.graphics
+		if not is_instance_valid(graphics.texture):
 			continue
 		
 		var modulate_multiplier = 1.0
@@ -36,10 +36,10 @@ func _draw() -> void:
 		
 		var rect:= Rect2i(world_position, map_data.grid_definition.cell_size)
 		draw_texture_rect(
-			graphic.texture,
+			graphics.texture,
 			rect,
 			false,
-			graphic.modulate * modulate_multiplier,
+			graphics.modulate * modulate_multiplier,
 		)
 
 

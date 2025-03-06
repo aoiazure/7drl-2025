@@ -9,7 +9,7 @@ var all_actors: Array[Actor] = []
 var current_actor: int = 0
 var prev_size: int
 
-var _needs_update: bool = false
+var _needs_update: bool = true
 
 ## Called to set up this node.
 func setup(_map_data: MapData) -> void:
@@ -18,18 +18,11 @@ func setup(_map_data: MapData) -> void:
 		func():
 			_needs_update = true
 	)
-
+	
 ## Turn loop for the game.
 func _process(_delta: float) -> void:
 	if _needs_update:
-		all_actors = self.map_data.actors.duplicate()
-		all_actors.sort_custom(
-			func(a: Actor, b: Actor):
-				return a.id < b.id
-		)
-		_needs_update = false
-	
-	
+		_update_actor_list()
 	
 	if all_actors.is_empty():
 		return
@@ -43,31 +36,25 @@ func _process(_delta: float) -> void:
 	
 	# Get current controller and its associated actor
 	var actor: Actor = all_actors[current_actor]
-	if not is_instance_valid(actor):
-		all_actors.erase(actor)
-		return
-	
 	var controller:= actor.controller
-	if not is_instance_valid(controller):
-		all_actors.erase(actor)
-		return
-	
 	# Dead actor or simply an error, so we remove them from the turn set.
 	if controller is ECorpseController:
 		all_actors.erase(actor)
 		return
 	
 	var energy: Energy = actor.get_component_or_null(Components.ENERGY)
-	if not energy:
-		all_actors.erase(actor)
-		return
 	
-	# Not ready to act yet.
+	# Turbo speed for someone who can act
 	if not energy.can_act():
-		energy.current_energy += 5
-		printt(all_actors, "incrementing", actor)
-		_increment_current_controller()
-		return
+		while true:
+			actor = all_actors[current_actor]
+			controller = actor.controller
+			energy = actor.get_component_or_null(Components.ENERGY)
+			if not energy.can_act():
+				energy.current_energy += energy.speed
+				_increment_current_controller()
+				continue
+			break
 	
 	# Non-blocking wait for an action. If there's nothing we just keep processing until we get one.
 	var action: EAction = controller.get_action(actor)
@@ -80,8 +67,9 @@ func _process(_delta: float) -> void:
 	while true:
 		var result: EActionResult = action.execute()
 		if not result.succeeded:
-			#if actor == map_data.player:
-			Logger.error(result.error_message)
+			if actor == map_data.player:
+				Logger.error(result.error_message)
+			
 			return
 		if result.alternative == null:
 			break
@@ -92,9 +80,8 @@ func _process(_delta: float) -> void:
 	# do the visual effects of the actions
 	# await CombatDirector.process_visuals()
 	
-	printt(all_actors, "acted\t\t", actor)
 	# Reset energy for the actor since they acted.
-	energy.current_energy = min(energy.current_energy, 0)
+	energy.current_energy -= energy.required_to_act
 	
 	# Tell the world a turn was taken.
 	# This also tells the map to redraw.
@@ -103,11 +90,33 @@ func _process(_delta: float) -> void:
 	# Cycle to next actor.
 	_increment_current_controller()
 
+func _update_actor_list() -> void:
+	all_actors = self.map_data.actors.duplicate()
+	all_actors = all_actors.filter(
+		func(_actor: Actor) -> bool:
+			if not is_instance_valid(_actor):
+				return false
+			var controller:= _actor.controller
+			if not is_instance_valid(controller):
+				return false
+			# Dead actor or simply an error, so we remove them from the turn set.
+			if controller is ECorpseController:
+				return false
+			if not _actor.get_component_or_null(Components.ENERGY):
+				return false
+			
+			return true
+	)
+	all_actors.sort_custom(
+		func(a: Actor, b: Actor):
+			return a.id < b.id
+	)
+	_needs_update = false
+
 func _increment_current_controller() -> void:
 	if all_actors.is_empty():
 		return
 	
 	current_actor = (current_actor + 1) % all_actors.size()
-
 
 

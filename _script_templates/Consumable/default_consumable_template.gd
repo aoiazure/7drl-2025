@@ -5,7 +5,7 @@ class_name _CLASS_ extends Consumable
 ## Use the item's ability.
 ## Subclasses call this method to cause the desired effect.
 func activate(_item_action: ItemAction) -> EActionResult:
-	var error:= "Item [%s] effect is unimplemented." % entity.name.capitalize()
+	var error:= "Item [%s] effect is unimplemented." % entity.entity_name.capitalize()
 	Logger.error(error, true)
 	return EActionResult.new(false, null, error)
 

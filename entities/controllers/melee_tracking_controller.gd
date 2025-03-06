@@ -95,6 +95,9 @@ func _path_to_vision_from_goal_pos(_actor: Actor, _target: Actor, _next_position
 
 func _run_pathing_thread(actor: Actor, _target: Actor) -> Vector2i:
 	var distance: int = abs(target.grid_position.x - actor.grid_position.x) + abs(target.grid_position.y - actor.grid_position.y)
+	if distance <= 1:
+		return actor.grid_position
+	
 	var path: Array[Vector2i] = []
 	## If close, path to one of the 4 nearbys
 	if distance <= 5:
@@ -143,8 +146,6 @@ func _run_pathing_thread(actor: Actor, _target: Actor) -> Vector2i:
 		next_position = _path_to_vision_from_goal_pos(actor, target, next_position)
 	else:
 		next_position = ActorHelper.get_navigation_path_to(actor.grid_position, target.grid_position)[1]
-	
-	printt(actor.grid_position, next_position, path)
 	
 	# Update positions
 	if target.grid_position != _prev_target_position:

@@ -155,16 +155,16 @@ func populate_initial_state(state: WFCSolverState):
 		for y in range(rect.size.y):
 			var pos: Vector2i = Vector2i(x, y)
 			var abs_pos := rect.position + pos
-
+			
 			# First try to read from target map (if point is contained in initial_read_rects)
 			var from_map := _read_from_target(abs_pos)
-
+			
 			if from_map >= 0:
 				state.set_solution(coord_to_id(pos), from_map)
 			else:
 				# Otherwise - apply preconditions...
 				var domain: WFCBitSet = precondition.read_domain(abs_pos)
-
+				
 				# ...and edge conditions
 				if not axis_pre_edge_domains.is_empty():
 					for axis_id in range(len(axes)):
@@ -176,7 +176,7 @@ func populate_initial_state(state: WFCSolverState):
 								else:
 									domain = domain.intersect(axis_pre_edge_domains[axis_id])
 									assert(not domain.is_empty())
-
+				
 				if domain != null:
 					var bt: bool = state.set_domain(coord_to_id(pos), domain)
 					assert(not bt, "Precondition yielded an empty domain at (%f, %f)" % [x, y])

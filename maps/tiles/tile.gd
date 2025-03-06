@@ -36,17 +36,21 @@ func deserialize(data: Dictionary) -> void:
 		if _save_data.has("type"):
 			match _save_data["type"]:
 				"Actor":
-					var a: Actor = Actor.ACTOR_SCENE.instantiate()
+					var a: Actor = Actor.create()
 					a.deserialize(_save_data)
 					_entities.append(a)
+				"Item":
+					var i: Item = Item.new()
+					i.deserialize(_save_data)
+					_entities.append(i)
 				"Hitbox":
 					var h: Hitbox = Hitbox.HITBOX_SCENE.instantiate()
 					h.deserialize(_save_data)
 					_entities.append(h)
-				"Item":
-					var i: Item = Item.ITEM_SCENE.instantiate()
-					i.deserialize(_save_data)
-					_entities.append(i)
+				"Campfire":
+					var c: Campfire = Campfire.SCENE.instantiate()
+					c.deserialize(_save_data)
+					_entities.append(c)
 				# Generic entity
 				_:
 					var e: Entity = Entity.new()

@@ -458,6 +458,7 @@ func update_editor():
 	update_outline()
 
 func open_quick_search():
+	return
 	if (quick_open_popup == null):
 		var script_path: String = get_script().get_path().get_base_dir()
 		quick_open_popup = load(script_path.path_join("quickopen/quick_open_panel.tscn")).instantiate()

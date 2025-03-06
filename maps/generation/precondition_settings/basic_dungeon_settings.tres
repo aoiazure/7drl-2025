@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="WFC2DPreconditionDungeonSettings" load_steps=2 format=3 uid="uid://11fmpl5d7gic"]
+
+[ext_resource type="Script" uid="uid://c3aynmp2xvssj" path="res://addons/wfc/problems/2d/preconditions/precondition_2d_dungeon_settings.gd" id="1_ckpor"]
+
+[resource]
+script = ExtResource("1_ckpor")
+wall_border_size = Vector2i(1, 1)
+free_gap = Vector2i(2, 2)
+room_half_size_base = Vector2i(2, 2)
+room_half_size_variation = Vector2i(2, 2)
+room_probability = 0.5
+road_len_base = 15
+road_len_variation = 5
+fork_probability = 0.5
+full_fork_probability = 0.5
+passable_area_ratio = 0.1901
+iterations_limit = 1000
+road_class = "wfc_road"
+wall_class = "wfc_wall"
+classes_map = NodePath("")
+metadata/_custom_type_script = "uid://c3aynmp2xvssj"

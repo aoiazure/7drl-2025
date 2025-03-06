@@ -1,11 +1,13 @@
 class_name MapData extends Resource
 
 signal actors_changed
+signal entity_needs_adding_to_tree(entity: Entity)
 
 @export var grid_definition: GridDefinition
 
 var rng_seed: int
 @export var tile_data: Dictionary[Vector2i, Tile] = {}
+var entities: Array[Entity] = []
 var actors: Array[Actor] = []
 var player: Actor
 
@@ -19,6 +21,12 @@ func add_entity_to_tile_at_position(entity: Entity, position: Vector2i) -> void:
 	entity.grid_position = position
 	tile_data[position].entities.append(entity)
 	
+	if not entity.is_inside_tree():
+		entity_needs_adding_to_tree.emit(entity)
+	
+	if not entities.has(entity):
+		entities.append(entity)
+	
 	if entity is Actor:
 		actors.append(entity)
 		actors_changed.emit()
@@ -29,6 +37,7 @@ func add_entity_to_tile_at_position(entity: Entity, position: Vector2i) -> void:
 func remove_entity(entity: Entity) -> void:
 	tile_data[entity.grid_position].entities.erase(entity)
 	
+	entities.erase(entity)
 	if entity is Actor:
 		actors.erase(entity)
 		actors_changed.emit()

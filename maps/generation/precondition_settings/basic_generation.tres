@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WFC2DPreconditionComposeSettings" load_steps=6 format=3 uid="uid://guwxxxmsdspn"]
+
+[ext_resource type="Script" uid="uid://2v0xy2yosutl" path="res://addons/wfc/problems/2d/preconditions/precondition_2d_base_settings.gd" id="1_mnsw0"]
+[ext_resource type="Script" uid="uid://cnof2gknhss2v" path="res://addons/wfc/problems/2d/preconditions/precondition_2d_read_existing_settings.gd" id="2_x4fsm"]
+[ext_resource type="Resource" uid="uid://11fmpl5d7gic" path="res://maps/generation/precondition_settings/basic_dungeon_settings.tres" id="3_tf0vu"]
+[ext_resource type="Script" uid="uid://b8wsbmko34vd4" path="res://addons/wfc/problems/2d/preconditions/precondition_2d_compose_settings.gd" id="4_yftgn"]
+
+[sub_resource type="Resource" id="Resource_mnsw0"]
+script = ExtResource("2_x4fsm")
+metadata/_custom_type_script = "uid://cnof2gknhss2v"
+
+[resource]
+script = ExtResource("4_yftgn")
+preconditions = Array[ExtResource("1_mnsw0")]([SubResource("Resource_mnsw0"), ExtResource("3_tf0vu")])
+metadata/_custom_type_script = "uid://b8wsbmko34vd4"

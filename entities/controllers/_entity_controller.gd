@@ -8,6 +8,7 @@ static var Lookup: Dictionary[StringName, EController] = {
 	"EMeleeController": EMeleeController.new(),
 	
 	"PMoveController": PMoveController.new(),
+	"PInventoryController": PInventoryController.new(),
 	
 	"HitboxController": HitboxController.new(),
 }

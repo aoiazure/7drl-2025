@@ -22,12 +22,17 @@ var grid_position: Vector2i : set = _set_grid_position
 var components: Dictionary[StringName, EComponent] = {}
 
 ## Visual component
-var graphics: Graphics
 var sprite
 
 var map_data: MapData
 
+func set_entity_name(_name: String) -> Entity:
+	entity_name = _name
+	return self
 
+func set_description(_desc: String) -> Entity:
+	entity_desc = _desc
+	return self
 
 func add_component(_name: StringName, _component: EComponent) -> Entity:
 	if not components.has(_name):
@@ -73,8 +78,6 @@ func serialize() -> Dictionary:
 		"blocks_vision": blocks_vision,
 		
 		"components": c_data,
-		
-		"graphics": graphics.serialize(),
 	}
 	
 	return data
@@ -99,32 +102,40 @@ func deserialize(data: Dictionary) -> void:
 	for i: int in range(temp_components.size()):
 		var key: String = temp_components.keys()[i]
 		
-		if key == Components.CONSUMABLE:
+		if key == Components.GRAPHICS:
+			# Visuals
+			var graphics: Graphics = Graphics.new()
+			graphics.deserialize(temp_components[key])
+			
+			if graphics.texture is SpriteFrames:
+				sprite = AnimatedSprite2D.new()
+				sprite.centered = false
+				sprite.modulate = graphics.modulate
+				sprite.sprite_frames = graphics.texture
+				add_child(sprite)
+				sprite.play()
+			elif graphics.texture is Texture2D:
+				sprite = Sprite2D.new()
+				sprite.centered = false
+				sprite.modulate = graphics.modulate
+				sprite.texture = graphics.texture
+				add_child(sprite)
+			
+			add_component(Components.GRAPHICS, graphics)
+		elif key == Components.CONSUMABLE:
 			var consumable_data: Dictionary = temp_components[key]
 			var consumable: Consumable = Consumable.Index[consumable_data["name"]].duplicate(true)
+			consumable.deserialize(consumable_data)
 			add_component(key, consumable)
+		elif key == Components.EQUIPPABLE:
+			var equippable_data: Dictionary = temp_components[key]
+			var equippable: Equippable = Equippable.Index[equippable_data["name"]].duplicate(true)
+			equippable.deserialize(equippable_data)
+			add_component(key, equippable)
 		else:
 			var component: EComponent = EComponent.Lookup[key].duplicate(true)
 			component.deserialize(temp_components[key])
 			add_component(key, component)
-	
-	# Visuals
-	self.graphics = Graphics.new()
-	self.graphics.deserialize(data["graphics"])
-	
-	if graphics.texture is SpriteFrames:
-		sprite = AnimatedSprite2D.new()
-		sprite.centered = false
-		sprite.modulate = graphics.modulate
-		sprite.sprite_frames = graphics.texture
-		add_child(sprite)
-		sprite.play()
-	elif graphics.texture is Texture2D:
-		sprite = Sprite2D.new()
-		sprite.centered = false
-		sprite.modulate = graphics.modulate
-		sprite.texture = graphics.texture
-		add_child(sprite)
 
 #endregion
 
@@ -136,8 +147,11 @@ func _set_grid_position(val: Vector2i) -> void:
 	var old_pos = grid_position
 	grid_position = val
 	grid_position_changed.emit(old_pos, val)
-
-
+	
+	if not is_inside_tree():
+		return
+	
+	global_position = map_data.grid_definition.calculate_map_position_centered(val)
 
 
 

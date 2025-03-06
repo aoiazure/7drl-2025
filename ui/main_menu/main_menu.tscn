@@ -1,0 +1,195 @@
+[gd_scene load_steps=9 format=3 uid="uid://di14l64tduo0r"]
+
+[ext_resource type="Script" uid="uid://bvwwqwmk7j6fw" path="res://ui/main_menu/main_menu.gd" id="1_uhj5c"]
+[ext_resource type="StyleBox" uid="uid://8qupobprsfeb" path="res://assets/theming/panel_highlight.tres" id="2_mu8pm"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_uhj5c"]
+font_size = 32
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3c04x"]
+bg_color = Color(0.598309, 0.598309, 0.598309, 0.588235)
+border_width_bottom = 1
+expand_margin_left = 2.0
+expand_margin_right = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i5wg5"]
+bg_color = Color(0.598309, 0.598309, 0.598309, 0.196078)
+border_width_bottom = 1
+expand_margin_left = 2.0
+expand_margin_right = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uhj5c"]
+bg_color = Color(0.2, 0.192157, 0.14902, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_detail = 1
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mu8pm"]
+bg_color = Color(0.180023, 0.172977, 0.133391, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_omy8q"]
+bg_color = Color(0.201559, 0.190236, 0.150451, 1)
+corner_detail = 1
+
+[node name="MainMenu" type="MarginContainer" node_paths=PackedStringArray("button_continue", "button_new_game", "button_quit", "button_back_cc", "button_start_game", "button_class_select", "container_main", "container_creation", "name_line_edit")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uhj5c")
+button_continue = NodePath("Main/Continue")
+button_new_game = NodePath("Main/New Game")
+button_quit = NodePath("Main/Quit")
+button_back_cc = NodePath("CharacterCreation/BackButton")
+button_start_game = NodePath("CharacterCreation/Panel/MarginContainer/VBoxContainer/Start")
+button_class_select = NodePath("CharacterCreation/Panel/MarginContainer/VBoxContainer/VBoxContainer/ClassSelection/OptionButton")
+container_main = NodePath("Main")
+container_creation = NodePath("CharacterCreation")
+name_line_edit = NodePath("CharacterCreation/Panel/MarginContainer/VBoxContainer/VBoxContainer/NameField/TextEdit")
+
+[node name="Main" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Label" type="Label" parent="Main"]
+layout_mode = 2
+text = "eldRL"
+label_settings = SubResource("LabelSettings_uhj5c")
+
+[node name="Continue" type="Button" parent="Main"]
+visible = false
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 6
+text = "Continue"
+
+[node name="New Game" type="Button" parent="Main"]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 6
+text = "New Game"
+
+[node name="Quit" type="Button" parent="Main"]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 6
+text = "Quit"
+
+[node name="CharacterCreation" type="MarginContainer" parent="."]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Panel" type="PanelContainer" parent="CharacterCreation"]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = ExtResource("2_mu8pm")
+
+[node name="MarginContainer" type="MarginContainer" parent="CharacterCreation/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterCreation/Panel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Label" type="Label" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Character Creation"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="NameField" type="HBoxContainer" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer/VBoxContainer/NameField"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+
+[node name="TextEdit" type="LineEdit" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer/VBoxContainer/NameField"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_styles/focus = SubResource("StyleBoxFlat_3c04x")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i5wg5")
+placeholder_text = "Name"
+max_length = 18
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_enabled = false
+shortcut_keys_enabled = false
+middle_mouse_paste_enabled = false
+selecting_enabled = false
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="ClassSelection" type="HBoxContainer" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer/VBoxContainer/ClassSelection"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Starting Class"
+
+[node name="OptionButton" type="OptionButton" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer/VBoxContainer/ClassSelection"]
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 8
+flat = true
+icon_alignment = 1
+item_count = 3
+popup/item_0/text = "Mercenary"
+popup/item_0/id = 0
+popup/item_1/text = "Hunter"
+popup/item_1/id = 1
+popup/item_2/text = "Apprentice"
+popup/item_2/id = 2
+
+[node name="Start" type="Button" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Start"
+
+[node name="BackButton" type="Button" parent="CharacterCreation"]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_styles/focus = SubResource("StyleBoxFlat_uhj5c")
+theme_override_styles/hover = SubResource("StyleBoxFlat_mu8pm")
+theme_override_styles/normal = SubResource("StyleBoxFlat_omy8q")
+text = "Back"

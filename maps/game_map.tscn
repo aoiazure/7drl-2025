@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cjhfy8uvparuh"]
+[gd_scene load_steps=16 format=3 uid="uid://cjhfy8uvparuh"]
 
 [ext_resource type="Script" uid="uid://dhvdrjcl03wt5" path="res://maps/game_map.gd" id="1_bjbcw"]
 [ext_resource type="Script" uid="uid://dc0yukt27dlgv" path="res://maps/turn_scheduler.gd" id="2_0urrm"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://ceqviijurg0ix" path="res://utils/helpers/logger.gd" id="7_fxkst"]
 [ext_resource type="Script" uid="uid://fkh4barhh35" path="res://maps/tile_drawer.gd" id="9_14r2k"]
 [ext_resource type="PackedScene" uid="uid://bnys08k87vp0d" path="res://maps/generation/map_generator.tscn" id="10_x1lou"]
+[ext_resource type="PackedScene" uid="uid://b1nb4xli1b1h" path="res://ui/inventory_menu/inventory_menu.tscn" id="12_3vtbk"]
 
 [sub_resource type="Resource" id="Resource_7sqkw"]
 script = ExtResource("2_x667m")
@@ -27,7 +28,7 @@ metadata/_custom_type_script = "uid://3eau6y1bkren"
 [sub_resource type="LabelSettings" id="LabelSettings_x1lou"]
 font_size = 10
 
-[node name="GameMap" type="Node2D" node_paths=PackedStringArray("map_gen", "tile_drawer", "entity_holder", "actor_helper", "entity_action_handler", "map_helper", "logger", "turn_scheduler")]
+[node name="GameMap" type="Node2D" node_paths=PackedStringArray("map_gen", "tile_drawer", "entity_holder", "actor_helper", "entity_action_handler", "map_helper", "logger", "turn_scheduler", "inventory_menu", "layer_loading_screen", "layer_game_ui", "label_health", "label_stamina", "label_mana", "label_death_msg")]
 script = ExtResource("1_bjbcw")
 map_data = SubResource("Resource_lmtof")
 map_gen = NodePath("Generator")
@@ -38,6 +39,17 @@ entity_action_handler = NodePath("Helpers/EntityActionHandler")
 map_helper = NodePath("Helpers/MapHelper")
 logger = NodePath("Helpers/Logger")
 turn_scheduler = NodePath("TurnScheduler")
+inventory_menu = NodePath("Inventory/InventoryMenu")
+layer_loading_screen = NodePath("LoadingScreen")
+layer_game_ui = NodePath("GameUI")
+label_health = NodePath("GameUI/VBoxContainer/HealthLabel")
+label_stamina = NodePath("GameUI/VBoxContainer/StaminaLabel")
+label_mana = NodePath("GameUI/VBoxContainer/ManaLabel")
+label_death_msg = NodePath("GameUI/DeathLabel")
+
+[node name="TurnScheduler" type="Node" parent="."]
+script = ExtResource("2_0urrm")
+metadata/_custom_type_script = "uid://dc0yukt27dlgv"
 
 [node name="Helpers" type="Node" parent="."]
 
@@ -55,13 +67,9 @@ metadata/_custom_type_script = "uid://gwdytrhs2ox7"
 
 [node name="Logger" type="Node" parent="Helpers" node_paths=PackedStringArray("scroll", "log_container")]
 script = ExtResource("7_fxkst")
-scroll = NodePath("../../CanvasLayer/LogScroll")
-log_container = NodePath("../../CanvasLayer/LogScroll/Logs")
+scroll = NodePath("../../GameUI/MarginContainer/LogScroll")
+log_container = NodePath("../../GameUI/MarginContainer/LogScroll/Logs")
 metadata/_custom_type_script = "uid://ceqviijurg0ix"
-
-[node name="TurnScheduler" type="Node" parent="."]
-script = ExtResource("2_0urrm")
-metadata/_custom_type_script = "uid://dc0yukt27dlgv"
 
 [node name="Generator" parent="." instance=ExtResource("10_x1lou")]
 visible = false
@@ -73,41 +81,48 @@ metadata/_edit_lock_ = true
 
 [node name="EntityHolder" type="Node2D" parent="."]
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="GameUI" type="CanvasLayer" parent="."]
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
-visible = false
+[node name="VBoxContainer" type="VBoxContainer" parent="GameUI"]
 offset_right = 57.0
 offset_bottom = 40.0
 
-[node name="HealthLabel" type="Label" parent="CanvasLayer/VBoxContainer"]
+[node name="HealthLabel" type="Label" parent="GameUI/VBoxContainer"]
 layout_mode = 2
 text = "HP: X/X"
 label_settings = SubResource("LabelSettings_x1lou")
 
-[node name="StaminaLabel" type="Label" parent="CanvasLayer/VBoxContainer"]
+[node name="StaminaLabel" type="Label" parent="GameUI/VBoxContainer"]
 layout_mode = 2
 text = "SP: X/X"
 label_settings = SubResource("LabelSettings_x1lou")
 
-[node name="ManaLabel" type="Label" parent="CanvasLayer/VBoxContainer"]
+[node name="ManaLabel" type="Label" parent="GameUI/VBoxContainer"]
 layout_mode = 2
 text = "MP: X/X"
 label_settings = SubResource("LabelSettings_x1lou")
 
-[node name="LogScroll" type="ScrollContainer" parent="CanvasLayer"]
-custom_minimum_size = Vector2(100, 0)
-anchors_preset = 11
-anchor_left = 1.0
+[node name="MarginContainer" type="MarginContainer" parent="GameUI"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 0
+grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
 
-[node name="Logs" type="VBoxContainer" parent="CanvasLayer/LogScroll"]
+[node name="LogScroll" type="ScrollContainer" parent="GameUI/MarginContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
+size_flags_horizontal = 8
 
-[node name="DeathLabel" type="Label" parent="CanvasLayer"]
+[node name="Logs" type="VBoxContainer" parent="GameUI/MarginContainer/LogScroll"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="DeathLabel" type="Label" parent="GameUI"]
 visible = false
 anchors_preset = 8
 anchor_left = 0.5
@@ -121,5 +136,42 @@ offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
 text = "YOU DIED RIP BOZO"
+
+[node name="Inventory" type="CanvasLayer" parent="."]
+
+[node name="InventoryMenu" parent="Inventory" instance=ExtResource("12_3vtbk")]
+visible = false
+custom_minimum_size = Vector2(0, 100)
+anchors_preset = 12
+anchor_top = 1.0
+grow_vertical = 0
+
+[node name="LoadingScreen" type="CanvasLayer" parent="."]
+
+[node name="BG" type="ColorRect" parent="LoadingScreen"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0.101961, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="LoadingScreen"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="Label" type="Label" parent="LoadingScreen/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "loading..."
+horizontal_alignment = 1
+vertical_alignment = 2
 
 [connection signal="turn_taken" from="TurnScheduler" to="TileDrawer" method="_on_turn_scheduler_turn_taken"]

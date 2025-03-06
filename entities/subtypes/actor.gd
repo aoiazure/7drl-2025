@@ -15,7 +15,7 @@ var controller: EController :
 		controller.on_set_active(self)
 
 static func create() -> Actor:
-	var a: Actor = ACTOR_SCENE.instantiate()
+	var a: Actor = Actor.new()
 	return a
 
 
@@ -54,10 +54,9 @@ func deserialize(data: Dictionary) -> void:
 	if fov:
 		fov.updated.connect(
 			func():
-				print("called")
 				call_deferred("emit_signal", &"fov_updated", fov)
 		)
-	
+
 
 #endregion
 

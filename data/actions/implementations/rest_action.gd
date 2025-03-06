@@ -8,7 +8,7 @@ func execute() -> EActionResult:
 		return EActionResult.new(true, EAPickUpItem.new(actor))
 	
 	if actor == actor.map_data.player:
-		Logger.log("%s rested." % actor.name)
+		Logger.log("%s rested." % actor.entity_name)
 	
 	var stamina: Stamina = actor.get_component_or_null(Components.STAMINA)
 	if stamina:
@@ -20,7 +20,7 @@ func execute() -> EActionResult:
 
 
 func undo() -> EActionResult:
-	Logger.log("%s un-rested." % actor.name)
+	Logger.log("%s un-rested." % actor.entity_name)
 	return EActionResult.new(true)
 
 
