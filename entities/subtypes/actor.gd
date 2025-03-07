@@ -4,6 +4,9 @@ signal died(actor: Actor)
 signal fov_updated(fov_component: Fov)
 
 const ACTOR_SCENE:= preload("res://entities/subtypes/actor.tscn")
+const BOSS_SCENES: Array[PackedScene] = [
+	preload("res://entities/subtypes/bosses/boss_0.tscn"),
+]
 
 var mark_for_freeing: bool = false
 var is_player: bool = false
@@ -12,13 +15,21 @@ var is_player: bool = false
 var controller: EController :
 	set(val):
 		controller = val
-		controller.on_set_active(self)
+		if controller:
+			controller.on_set_active(self)
 
 static func create() -> Actor:
 	var a: Actor = Actor.new()
 	return a
 
-
+func _ready() -> void:
+	super()
+	
+	MapSignalBus.arena_entrance_triggered.connect(
+		func():
+			if (self is not Boss) and not is_player:
+				self.controller = null
+	)
 
 #region Saving and Loading
 func serialize() -> Dictionary:
@@ -90,7 +101,5 @@ func _to_string() -> String:
 	if energy:
 		msg += " | %s/%s" % [energy.current_energy, energy.required_to_act]
 	return msg
-
-
 
 

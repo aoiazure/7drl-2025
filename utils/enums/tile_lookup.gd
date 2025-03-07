@@ -5,8 +5,9 @@ const GENERIC_FLOOR:= Vector2i(5, 16)
 const CAMPFIRE:= Vector2i(12, 26)
 const CHEST:= Vector2i(0, 36)
 
-const ENTRANCE:= Vector2i(6, 11)
+const ARENA_ENTRANCE:= Vector2i(6, 11)
 const ARENA_TRIGGER:= Vector2i(9, 29)
+const ARENA_BOSS_SPAWN:= Vector2i(9, 8)
 
 const FLOOR: Dictionary[Vector2i, AtlasTexture] = {
 	# Floor

@@ -142,6 +142,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 0
 theme_override_styles/focus = SubResource("StyleBoxFlat_3c04x")
 theme_override_styles/normal = SubResource("StyleBoxFlat_i5wg5")
+text = "Player"
 placeholder_text = "Name"
 max_length = 18
 context_menu_enabled = false
@@ -175,8 +176,10 @@ popup/item_0/text = "Mercenary"
 popup/item_0/id = 0
 popup/item_1/text = "Hunter"
 popup/item_1/id = 1
+popup/item_1/disabled = true
 popup/item_2/text = "Apprentice"
 popup/item_2/id = 2
+popup/item_2/disabled = true
 
 [node name="Start" type="Button" parent="CharacterCreation/Panel/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 0)

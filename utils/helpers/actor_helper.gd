@@ -56,6 +56,7 @@ static func get_actor_at_position(position: Vector2i, exclude: Array[Actor] = []
 	return actor
 
 
+
 ## Returns an Array[Vector2i].
 static func get_navigation_path_to(from_position: Vector2i, to_position: Vector2i, 
 		refresh: bool = false, allow_partial: bool = false) -> Array[Vector2i]:

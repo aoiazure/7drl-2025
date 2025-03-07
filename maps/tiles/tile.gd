@@ -51,6 +51,22 @@ func deserialize(data: Dictionary) -> void:
 					var c: Campfire = Campfire.SCENE.instantiate()
 					c.deserialize(_save_data)
 					_entities.append(c)
+				"ArenaEntrance":
+					var a: ArenaEntrance = ArenaEntrance.new()
+					a.deserialize(_save_data)
+					_entities.append(a)
+				"ArenaTrigger":
+					var t:= ArenaTrigger.new()
+					t.deserialize(_save_data)
+					_entities.append(t)
+				"Boss":
+					var b: Boss = Boss.new()
+					b.deserialize(_save_data)
+					_entities.append(b)
+				"FireTile":
+					var f:= FireTile.new()
+					f.deserialize(_save_data)
+					_entities.append(f)
 				# Generic entity
 				_:
 					var e: Entity = Entity.new()
@@ -106,7 +122,21 @@ func is_walkable() -> bool:
 	return is_possible
 
 func is_transparent() -> bool:
-	return definition.is_transparent
+	var is_possible:= false
+	if not definition.is_transparent:
+		return false
+	
+	if entities.is_empty():
+		is_possible = true
+	else:
+		var can_see: bool = true
+		for e: Entity in entities:
+			if e.blocks_vision:
+				can_see = false
+				break
+		is_possible = can_see
+	
+	return is_possible
 
 
 func add_entity(entity: Entity) -> void:

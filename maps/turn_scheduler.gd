@@ -38,7 +38,7 @@ func _process(_delta: float) -> void:
 	var actor: Actor = all_actors[current_actor]
 	var controller:= actor.controller
 	# Dead actor or simply an error, so we remove them from the turn set.
-	if controller is ECorpseController:
+	if not is_instance_valid(controller) or controller is ECorpseController:
 		all_actors.erase(actor)
 		return
 	

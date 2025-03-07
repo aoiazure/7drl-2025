@@ -20,14 +20,20 @@ extends Node2D
 @export var label_health: Label
 @export var label_stamina: Label
 @export var label_mana: Label
+
+@export var container_death: Container
 @export var label_death_msg: Label
+@export var container_victory: Container
+@export var label_victory_msg: Label
 
 var _spawn_campfire_pos: Vector2i
 
+
+
 func _ready() -> void:
+	layer_loading_screen.show()
+	layer_game_ui.hide()
 	_setup()
-
-
 
 func _setup() -> void:
 	map_data.entity_needs_adding_to_tree.connect(_on_map_data_entity_tree_add)
@@ -48,13 +54,6 @@ func _setup() -> void:
 	ActorHelper.instance.set_up_astar()
 	layer_loading_screen.hide()
 
-func _on_map_data_entity_tree_add(entity: Entity) -> void:
-	if not entity.is_inside_tree():
-		entity_holder.add_child(entity)
-		entity._set_grid_position(entity.grid_position)
-		entity.reset_physics_interpolation()
-	
-	
 
 
 func _convert_tilemap_to_map_data() -> void:
@@ -78,7 +77,7 @@ func _convert_tilemap_to_map_data() -> void:
 			td.is_transparent = false
 			map_data.tile_data[coord] = Tile.create(td)
 		elif TileLookup.WALLS.keys().has(atlas_coord):
-			var td:= TileDefinition.create("tree", TileLookup.WALLS[atlas_coord].resource_path, 0, Color.DARK_GRAY)
+			var td:= TileDefinition.create("wall", TileLookup.WALLS[atlas_coord].resource_path, 0, Color.DARK_GRAY)
 			td.is_walkable = false
 			td.is_transparent = false
 			map_data.tile_data[coord] = Tile.create(td)
@@ -86,10 +85,12 @@ func _convert_tilemap_to_map_data() -> void:
 			_place_campfire(coord, offset)
 		elif atlas_coord == TileLookup.CHEST:
 			_place_chest(coord)
-		elif atlas_coord == TileLookup.ENTRANCE:
-			pass
+		elif atlas_coord == TileLookup.ARENA_ENTRANCE:
+			_place_arena_entrance(coord)
 		elif atlas_coord == TileLookup.ARENA_TRIGGER:
-			pass
+			_place_arena_trigger(coord)
+		elif atlas_coord == TileLookup.ARENA_BOSS_SPAWN:
+			_place_boss(coord, offset)
 
 func _place_chest(coord: Vector2i) -> void:
 	var td:= TileDefinition.create(
@@ -127,8 +128,45 @@ func _place_campfire(coord: Vector2i, offset: Vector2i) -> void:
 	if map_gen.first_campfire_rect.has_point(coord - offset):
 		_spawn_campfire_pos = coord
 
+func _place_arena_entrance(coord: Vector2i) -> void:
+	var td:= TileDefinition.create(
+		"floor", TileLookup.FLOOR.values().pick_random().resource_path,
+		0, Color.SLATE_GRAY
+	)
+	var tile:= Tile.create(td)
+	map_data.tile_data[coord] = tile
+	
+	var entrance:= ArenaEntrance.new()
+	entrance.map_data = map_data
+	map_data.add_entity_to_tile_at_position(entrance, coord)
 
+func _place_arena_trigger(coord: Vector2i) -> void:
+	var td:= TileDefinition.create(
+		"floor", TileLookup.FLOOR.values().pick_random().resource_path,
+		0, Color.SLATE_GRAY
+	)
+	var tile:= Tile.create(td)
+	map_data.tile_data[coord] = tile
+	
+	var trigger:= ArenaTrigger.new()
+	trigger.map_data = map_data
+	map_data.add_entity_to_tile_at_position(trigger, coord)
 
+func _place_boss(coord: Vector2i, offset: Vector2i) -> void:
+	var td:= TileDefinition.create(
+		"floor", TileLookup.FLOOR.values().pick_random().resource_path,
+		0, Color.SLATE_GRAY
+	)
+	var tile:= Tile.create(td)
+	map_data.tile_data[coord] = tile
+	
+	var boss: Boss = Actor.BOSS_SCENES.pick_random().instantiate()
+	boss.arena_data = map_gen.boss_arena_data
+	var rect: Rect2i = boss.arena_data["rect"]
+	rect.position += offset
+	boss.arena_data["rect"] = rect
+	boss.map_data = map_data
+	map_data.add_entity_to_tile_at_position(boss, coord)
 
 
 
@@ -155,7 +193,7 @@ func _spawn_player(dijkstra: Dictionary[Vector2i, int]) -> void:
 		a1.controller = PMoveController.new()
 		a1.add_component(Components.GRAPHICS, Graphics.create(
 					"res://assets/sprites/player/player_basic_frames.tres", RenderOrder.ACTOR))\
-			.add_component(Components.ENERGY, Energy.create(1, 2))\
+			.add_component(Components.ENERGY, Energy.create(200))\
 			.add_component(Components.FIGHTER, Fighter.create(2, 1, 1, 1, 8))\
 			.add_component(Components.STAMINA, Stamina.create(3, 5))\
 			.add_component(Components.EQUIPMENT, Equipment.create({
@@ -194,8 +232,8 @@ func _spawn_player(dijkstra: Dictionary[Vector2i, int]) -> void:
 	## Reupdate just in case.
 	map_data.get_all_walkable_cells_from_position(a1.grid_position, true)
 
-
 func _set_up_player_signals(player: Actor) -> void:
+	## Stats
 	var fighter: Fighter = player.get_component_or_null(Components.FIGHTER)
 	label_health.text = "HP: %2d/%2d" % [fighter.cur_health, fighter.max_health]
 	fighter.health_changed.connect(
@@ -221,9 +259,10 @@ func _set_up_player_signals(player: Actor) -> void:
 			label_mana.text = "MP: %2d/%2d" % [_cur, _max]
 	)
 	
-	player.died.connect(
-		func(_a: Actor):
-			label_death_msg.show()
+	## Position
+	player.grid_position_changed.connect(
+		func(_o, _n):
+			MapSignalBus.player_position_changed.emit(_o, _n)
 	)
 	
 	player.fov_updated.connect(
@@ -231,30 +270,30 @@ func _set_up_player_signals(player: Actor) -> void:
 			call_thread_safe(&"_on_player_fov_updated", fov)
 	)
 	
-	## Show it
+	## Show user interface
 	layer_game_ui.show()
-
 
 func _spawn_enemies(dijkstra: Dictionary[Vector2i, int]) -> void:
 	var amount: int = randi_range(5, 8) + 1
-	var spawned_locations: Array[Vector2i] = [_spawn_campfire_pos]
+	#var spawned_locations: Array[Vector2i] = [_spawn_campfire_pos]
 	
 	var valid_keys:= dijkstra.keys().filter(
 	func(v: Vector2i):
 		return dijkstra[v] >= 15
 	)
 	
+	var boss_arena_rect: Rect2i = map_gen.boss_arena_data["rect"]
+	
 	for i in range(amount):
 		var e1:= Actor.create()
 		e1.entity_name = "Soldier"
 		e1.blocks_movement = true
 		
-		
 		e1.controller = EAlertController.new()
 		e1.add_component(Components.GRAPHICS, Graphics.create(
-				"res://assets/sprites/player/player_basic_frames.tres", RenderOrder.ACTOR, Color.RED
+				"res://assets/sprites/enemies/soldier_sprite_frames.tres", RenderOrder.ACTOR, Color.RED
 			))\
-			.add_component(Components.ENERGY, Energy.create(1, 5))\
+			.add_component(Components.ENERGY, Energy.create(80, 100))\
 			.add_component(Components.FIGHTER, Fighter.create(2, 2, 0, 0, 4))\
 			.add_component(Components.FOV, Fov.create(6))
 		
@@ -267,10 +306,13 @@ func _spawn_enemies(dijkstra: Dictionary[Vector2i, int]) -> void:
 			#return dijkstra[v] >= 15
 		#)
 		
+		# Don't spawn in the boss area, lol
 		var spawn_location: Vector2i = valid_keys.pick_random()
-		map_data.add_entity_to_tile_at_position(e1, spawn_location)
+		while boss_arena_rect.has_point(spawn_location):
+			spawn_location = valid_keys.pick_random()
 		
-		spawned_locations.append(spawn_location)
+		map_data.add_entity_to_tile_at_position(e1, spawn_location)
+		#spawned_locations.append(spawn_location)
 		
 		#dijkstra = Dijkstra.calculate(
 			#_spawn_campfire_pos, spawned_locations,
@@ -279,8 +321,33 @@ func _spawn_enemies(dijkstra: Dictionary[Vector2i, int]) -> void:
 		#)
 
 
+## Signals
+func _on_map_data_entity_tree_add(entity: Entity) -> void:
+	if not entity.is_inside_tree():
+		entity_holder.add_child(entity)
+		entity._set_grid_position(entity.grid_position)
+		entity.reset_physics_interpolation()
+	
+	if entity is Actor:
+		if not entity.died.is_connected(_on_actor_died):
+			entity.died.connect(_on_actor_died)
 
-
+## Handle actor death.
+func _on_actor_died(actor: Actor) -> void:
+	## Death (you lost!)
+	if actor.is_player:
+		label_death_msg.text = "You have fallen...\n\nSo lies the legacy of %s." % actor.entity_name
+		container_death.show()
+	elif actor is Boss:
+		label_victory_msg.text = "By your hand, %s is slain...\n\nCongratulations." % actor.entity_name
+		container_victory.show()
+		turn_scheduler.set_process(false)
+	else:
+		## drop a random item
+		var item_key: StringName = Item.Factories.keys().pick_random()
+		var item: Item = Item.Factories[item_key].copy()
+		item.map_data = map_data
+		map_data.add_entity_to_tile_at_position(item, actor.grid_position)
 
 ## Hide actors as needed.
 func _on_player_fov_updated(fov: Fov) -> void:

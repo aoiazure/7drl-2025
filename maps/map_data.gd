@@ -15,6 +15,7 @@ var player: Actor
 #var cursor_rect: Rect2i
 #var cursor_in_range: bool = false
 
+var actors_changed_needs_emitting: bool = false
 var _all_walkable_cells: Array[Vector2i] = []
 
 func add_entity_to_tile_at_position(entity: Entity, position: Vector2i) -> void:
@@ -29,7 +30,10 @@ func add_entity_to_tile_at_position(entity: Entity, position: Vector2i) -> void:
 	
 	if entity is Actor:
 		actors.append(entity)
-		actors_changed.emit()
+		
+		if not actors_changed_needs_emitting:
+			actors_changed_needs_emitting = true
+			call_deferred(&"emit_actors_changed")
 	
 	ActorHelper.instance.set_up_astar()
 
@@ -67,6 +71,10 @@ func get_all_walkable_cells_from_position(grid_position: Vector2i, refresh: bool
 	
 	return _all_walkable_cells
 
+
+func emit_actors_changed() -> void:
+	actors_changed_needs_emitting = false
+	actors_changed.emit()
 
 #region Saving and Loading
 func serialize() -> Dictionary:

@@ -5,7 +5,6 @@ class_name HealthFlask extends Consumable
 ## Use the item's ability.
 ## Subclasses call this method to cause the desired effect.
 func activate(item_action: ItemAction) -> EActionResult:
-	print("called")
 	var fighter: Fighter = item_action.actor.get_component_or_null(Components.FIGHTER)
 	if not fighter:
 		return EActionResult.new(false, null, "You don't have a Fighter component to heal.")

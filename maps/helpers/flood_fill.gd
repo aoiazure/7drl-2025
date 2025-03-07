@@ -27,25 +27,30 @@ static func calculate(
 	return result
 
 ## Returns an array whose keys are the tile positions that are all connected to one another.
-static func calculate_tilemap(tilemap: TileMapLayer, _valid_atlases: Array[Vector2i]) -> Array[Vector2i]:
+static func calculate_tilemap(
+			tilemap: TileMapLayer, start_position: Vector2i, _valid_atlases: Array[Vector2i]) -> Array[Vector2i]:
+	
 	var all_cells:= tilemap.get_used_cells()
-	var queue: Array[Vector2i] = [tilemap.get_used_rect().get_center()]
+	var queue: Array[Vector2i] = [start_position]
 	var visited: Array[Vector2i] = []
-	var result: Array[Vector2i] = []
 	var neighbors: Array[Vector2i] = []
+	
+	var result: Array[Vector2i] = []
 	while not queue.is_empty():
 		var current_pos: Vector2i = queue.pop_back()
 		visited.append(current_pos)
-		result.append(current_pos)
 		
-		neighbors = tilemap.get_surrounding_cells(current_pos)
-		for neighbor: Vector2i in neighbors:
-			if not neighbor in all_cells:
-				continue
+		if tilemap.get_cell_atlas_coords(current_pos) in _valid_atlases:
+			result.append(current_pos)
 			
-			if tilemap.get_cell_atlas_coords(neighbor) in _valid_atlases:
-				if not visited.has(neighbor):
-					queue.append(neighbor)
+			neighbors = tilemap.get_surrounding_cells(current_pos)
+			for neighbor: Vector2i in neighbors:
+				if not neighbor in all_cells:
+					continue
+				
+				if tilemap.get_cell_atlas_coords(neighbor) in _valid_atlases:
+					if not visited.has(neighbor):
+						queue.append(neighbor)
 	
 	return result
 

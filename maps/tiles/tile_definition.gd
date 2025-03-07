@@ -1,5 +1,9 @@
 class_name TileDefinition extends Resource
 
+static var Lookup: Dictionary[String, TileDefinition] = {
+	
+}
+
 ## Name of this tile.
 @export var name: String = ""
 ## Graphics component.

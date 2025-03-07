@@ -142,6 +142,8 @@ func deserialize(data: Dictionary) -> void:
 func _ready() -> void:
 	if id == -1:
 		self.id = Time.get_ticks_msec()
+	
+	self.name = self.entity_name + str(id)
 
 func _set_grid_position(val: Vector2i) -> void:
 	var old_pos = grid_position

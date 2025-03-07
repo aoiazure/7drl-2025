@@ -10,14 +10,15 @@ config_version=5
 
 [application]
 
-config/name="7DRL 2025"
-run/main_scene="uid://cjhfy8uvparuh"
+config/name="eldRL"
+run/main_scene="uid://di14l64tduo0r"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
 SaveManager="*res://utils/saving/save_manager.gd"
+MapSignalBus="*res://utils/map_signal_bus.gd"
 
 [debug]
 

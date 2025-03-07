@@ -32,6 +32,7 @@ static func calculate(
 			var neighbors:= get_valid_floor_neighbors(cell_position, map_cells)
 			var own_value: int = array[as_index(cell_position, map_rect)]
 			var lowest_neighbor_value: int = MAX_DISTANCE
+			
 			for neighbor_position: Vector2i in neighbors:
 				var value: int = array[as_index(neighbor_position, map_rect)]
 				if value < lowest_neighbor_value:

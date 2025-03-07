@@ -12,7 +12,7 @@ func execute() -> EActionResult:
 	if not consumable and not equippable:
 		return EActionResult.new(false, null, "You can't use this item.")
 	
-	## TODO: Equippable
+	## Equip items
 	if equippable:
 		var equipment: Equipment = actor.get_component_or_null(Components.EQUIPMENT)
 		if not equipment:
@@ -21,7 +21,6 @@ func execute() -> EActionResult:
 		var result: bool = false
 		for slot_name: String in equipment.slots:
 			var slot: EquipmentSlot = equipment.slots[slot_name]
-			printt(slot.type, equippable.item_type)
 			if slot.type == equippable.item_type:
 				result = equipment.equip(item, slot_name, true)
 				if result:

@@ -48,8 +48,8 @@ class HitboxAttack extends EAWithDirection:
 		var fighter: Fighter = actor.get_component_or_null(Components.FIGHTER)
 		var power: int = fighter.get_stat(Stats.BODY)
 		
-		actor.queue_free()
 		actor.map_data.remove_entity(actor)
+		actor.queue_free()
 		
 		var target_actor: Actor = ActorHelper.get_actor_at_position(actor.grid_position, excluded)
 		if not target_actor:
@@ -58,6 +58,12 @@ class HitboxAttack extends EAWithDirection:
 		var target_fighter: Fighter = target_actor.get_component_or_null(Components.FIGHTER)
 		if not target_fighter:
 			return EActionResult.new(false, null, "The target actor does not have a fighter component.") 
+		
+		var affinity: Affinity = actor.get_component_or_null(Components.AFFINITY)
+		if affinity:
+			if affinity.is_friendly(target_actor):
+				Logger.log("Skipping this attack against %s as they are an ally." % target_actor.entity_name, true, true)
+				return EActionResult.new(true)
 		
 		var damage: int = maxi(0, power)
 		var attack_desc: String = "%s attacks %s" % [

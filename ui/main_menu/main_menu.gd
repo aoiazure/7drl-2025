@@ -21,6 +21,7 @@ func _ready() -> void:
 		func():
 			container_creation.hide()
 			container_main.show()
+			button_new_game.grab_focus()
 	)
 	
 	button_class_select.select(0)
@@ -32,11 +33,15 @@ func _ready() -> void:
 					var player: Actor = Actor.create()\
 						.add_component(Components.GRAPHICS, Graphics.create(
 								"res://assets/sprites/player/player_basic_frames.tres", RenderOrder.ACTOR))\
-						.add_component(Components.ENERGY, Energy.create(1, 2))\
+						.add_component(Components.ENERGY, Energy.create(200, 100))\
 						.add_component(Components.FIGHTER, Fighter.create(2, 1, 0, 0, 8))\
-						.add_component(Components.STAMINA, Stamina.create(3, 5))\
-						.add_component(Components.MANA, Mana.create(3, 5))\
+						.add_component(Components.STAMINA, Stamina.create(5, 5))\
+						.add_component(Components.MANA, Mana.create(5, 5))\
 						.add_component(Components.FOV, Fov.create(12))\
+						.add_component(Components.EQUIPMENT, Equipment.create({
+							"Weapon": EquipmentSlot.create("Weapon", Items.Types.WEAPON),
+							"Armor": EquipmentSlot.create("Armour", Items.Types.ARMOR),
+						}))\
 						.add_component(Components.INVENTORY, Inventory.create([
 								Item.Factories[Items.HEALTH_FLASK].copy(),
 								Item.Factories[Items.MANA_FLASK].copy(),
@@ -55,11 +60,13 @@ func _ready() -> void:
 			
 			get_tree().change_scene_to_packed(SCENE_GAME)
 	)
+	button_new_game.grab_focus()
 
 
 func _start_new_game() -> void:
 	container_main.hide()
 	container_creation.show()
+	name_line_edit.grab_focus()
 
 
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cjhfy8uvparuh"]
+[gd_scene load_steps=17 format=3 uid="uid://cjhfy8uvparuh"]
 
 [ext_resource type="Script" uid="uid://dhvdrjcl03wt5" path="res://maps/game_map.gd" id="1_bjbcw"]
 [ext_resource type="Script" uid="uid://dc0yukt27dlgv" path="res://maps/turn_scheduler.gd" id="2_0urrm"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://fkh4barhh35" path="res://maps/tile_drawer.gd" id="9_14r2k"]
 [ext_resource type="PackedScene" uid="uid://bnys08k87vp0d" path="res://maps/generation/map_generator.tscn" id="10_x1lou"]
 [ext_resource type="PackedScene" uid="uid://b1nb4xli1b1h" path="res://ui/inventory_menu/inventory_menu.tscn" id="12_3vtbk"]
+[ext_resource type="Script" uid="uid://baewfg76r6uao" path="res://ui/loading_label.gd" id="13_w8ext"]
 
 [sub_resource type="Resource" id="Resource_7sqkw"]
 script = ExtResource("2_x667m")
@@ -28,7 +29,7 @@ metadata/_custom_type_script = "uid://3eau6y1bkren"
 [sub_resource type="LabelSettings" id="LabelSettings_x1lou"]
 font_size = 10
 
-[node name="GameMap" type="Node2D" node_paths=PackedStringArray("map_gen", "tile_drawer", "entity_holder", "actor_helper", "entity_action_handler", "map_helper", "logger", "turn_scheduler", "inventory_menu", "layer_loading_screen", "layer_game_ui", "label_health", "label_stamina", "label_mana", "label_death_msg")]
+[node name="GameMap" type="Node2D" node_paths=PackedStringArray("map_gen", "tile_drawer", "entity_holder", "actor_helper", "entity_action_handler", "map_helper", "logger", "turn_scheduler", "inventory_menu", "layer_loading_screen", "layer_game_ui", "label_health", "label_stamina", "label_mana", "container_death", "label_death_msg", "container_victory", "label_victory_msg")]
 script = ExtResource("1_bjbcw")
 map_data = SubResource("Resource_lmtof")
 map_gen = NodePath("Generator")
@@ -39,13 +40,16 @@ entity_action_handler = NodePath("Helpers/EntityActionHandler")
 map_helper = NodePath("Helpers/MapHelper")
 logger = NodePath("Helpers/Logger")
 turn_scheduler = NodePath("TurnScheduler")
-inventory_menu = NodePath("Inventory/InventoryMenu")
+inventory_menu = NodePath("GameUI/VBoxContainer/InventoryMenu")
 layer_loading_screen = NodePath("LoadingScreen")
 layer_game_ui = NodePath("GameUI")
-label_health = NodePath("GameUI/VBoxContainer/HealthLabel")
-label_stamina = NodePath("GameUI/VBoxContainer/StaminaLabel")
-label_mana = NodePath("GameUI/VBoxContainer/ManaLabel")
-label_death_msg = NodePath("GameUI/DeathLabel")
+label_health = NodePath("GameUI/Stats/HealthLabel")
+label_stamina = NodePath("GameUI/Stats/StaminaLabel")
+label_mana = NodePath("GameUI/Stats/ManaLabel")
+container_death = NodePath("GameUI/VBoxContainer/Death")
+label_death_msg = NodePath("GameUI/VBoxContainer/Death/DeathLabel")
+container_victory = NodePath("GameUI/VBoxContainer/Victory")
+label_victory_msg = NodePath("GameUI/VBoxContainer/Victory/VictoryLabel")
 
 [node name="TurnScheduler" type="Node" parent="."]
 script = ExtResource("2_0urrm")
@@ -76,6 +80,7 @@ visible = false
 generate_on_ready = false
 
 [node name="TileDrawer" type="Node2D" parent="."]
+z_index = -100
 script = ExtResource("9_14r2k")
 metadata/_edit_lock_ = true
 
@@ -83,21 +88,21 @@ metadata/_edit_lock_ = true
 
 [node name="GameUI" type="CanvasLayer" parent="."]
 
-[node name="VBoxContainer" type="VBoxContainer" parent="GameUI"]
+[node name="Stats" type="VBoxContainer" parent="GameUI"]
 offset_right = 57.0
 offset_bottom = 40.0
 
-[node name="HealthLabel" type="Label" parent="GameUI/VBoxContainer"]
+[node name="HealthLabel" type="Label" parent="GameUI/Stats"]
 layout_mode = 2
 text = "HP: X/X"
 label_settings = SubResource("LabelSettings_x1lou")
 
-[node name="StaminaLabel" type="Label" parent="GameUI/VBoxContainer"]
+[node name="StaminaLabel" type="Label" parent="GameUI/Stats"]
 layout_mode = 2
 text = "SP: X/X"
 label_settings = SubResource("LabelSettings_x1lou")
 
-[node name="ManaLabel" type="Label" parent="GameUI/VBoxContainer"]
+[node name="ManaLabel" type="Label" parent="GameUI/Stats"]
 layout_mode = 2
 text = "MP: X/X"
 label_settings = SubResource("LabelSettings_x1lou")
@@ -122,31 +127,53 @@ size_flags_horizontal = 8
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="DeathLabel" type="Label" parent="GameUI"]
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -77.0
-offset_top = -11.5
-offset_right = 77.0
-offset_bottom = 11.5
+[node name="VBoxContainer" type="VBoxContainer" parent="GameUI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "YOU DIED RIP BOZO"
+alignment = 2
+
+[node name="Death" type="PanelContainer" parent="GameUI/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="DeathLabel" type="Label" parent="GameUI/VBoxContainer/Death"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "You have fallen...
+
+So lies the legacy of %s."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Victory" type="PanelContainer" parent="GameUI/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="VictoryLabel" type="Label" parent="GameUI/VBoxContainer/Victory"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "By your hand, the creature is slain...
+
+Congratulations."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InventoryMenu" parent="GameUI/VBoxContainer" instance=ExtResource("12_3vtbk")]
+visible = false
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
 
 [node name="Inventory" type="CanvasLayer" parent="."]
 
-[node name="InventoryMenu" parent="Inventory" instance=ExtResource("12_3vtbk")]
-visible = false
-custom_minimum_size = Vector2(0, 100)
-anchors_preset = 12
-anchor_top = 1.0
-grow_vertical = 0
-
 [node name="LoadingScreen" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="BG" type="ColorRect" parent="LoadingScreen"]
 anchors_preset = 15
@@ -173,5 +200,6 @@ size_flags_vertical = 8
 text = "loading..."
 horizontal_alignment = 1
 vertical_alignment = 2
+script = ExtResource("13_w8ext")
 
 [connection signal="turn_taken" from="TurnScheduler" to="TileDrawer" method="_on_turn_scheduler_turn_taken"]

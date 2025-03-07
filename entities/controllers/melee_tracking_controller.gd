@@ -1,9 +1,10 @@
 class_name EMeleeController extends EController
 
 const ATTACK_PATTERNS: Array[Array] = [
-	[4, 2, 3],
+	#L  W  Time to kill
+	[4, 2, 2],
 	[5, 1, 1],
-	[2, 3, 2],
+	[2, 3, 1],
 ]
 
 var target: Actor
@@ -39,7 +40,12 @@ func get_action(actor: Actor) -> EAction:
 		return EABump.new(actor, next_position - actor.grid_position)
 	
 	var attack_pattern: Array = ATTACK_PATTERNS.pick_random()
-	return EACreateHitboxesAction.new(actor, _create_hitboxes(actor, attack_pattern[0], attack_pattern[1]), attack_pattern[2])
+	var _attack_positions:= Hitbox.generate_positions(
+			actor.grid_position, target.grid_position, attack_pattern[0], attack_pattern[1]
+		)
+	
+	return EACreateHitboxesAction.new(actor, _attack_positions, attack_pattern[2], -1)
+
 
 
 func _create_hitboxes(actor: Actor, length: int, width: int) -> Array[Vector2i]:

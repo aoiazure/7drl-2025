@@ -28,10 +28,6 @@ var boss_arena_data: Dictionary = {}
 var first_campfire_rect: Rect2i
 
 func _ready() -> void:
-	#if not render_in_progress:
-		#camera.queue_free()
-		#camera = null
-	
 	if generate_on_ready:
 		generate()
 
@@ -56,9 +52,9 @@ func generate() -> void:
 	# 5. carve path between zones.
 	await _carve_zone_exits()
 	# 6. validate map is traversible.
-	if not _check_valid_map():
-		# 6a. if not, force a path through.
-		await _force_carve_path()
+	#if not _check_valid_map():
+	# 6a. fuck it, always force a path through.
+	await _force_carve_path()
 	
 	## Scatter when done
 	await _scatter_items()
@@ -247,11 +243,11 @@ func _place_prefabs_in_zones() -> void:
 		# Copy over all the prefab info into the zone.
 		Logger.log("Beginning prefab placement.", true, true)
 		await _copy_tilemap_to_other(prefab, tilemap_target, rect_to_place.position)
-		# Save this
+		# Save boss arenas
 		if prefab is Prefab:
 			if prefab.type == Prefab.Type.ARENA:
-				boss_arena_data = prefab.data
-				boss_arena_data["rect"] = rect_to_place
+				self.boss_arena_data = prefab.data.duplicate(true)
+				self.boss_arena_data["rect"] = Rect2i(rect_to_place)
 		
 		all_prefab_rects.append(rect_to_place.grow(2))
 		prefab.queue_free()
@@ -296,7 +292,7 @@ func _place_campfires() -> void:
 	await _copy_tilemap_to_other(prefab, tilemap_target, rect_to_place.position)
 	# Save this
 	first_campfire_rect = rect_to_place
-	all_prefab_rects.append(rect_to_place.grow(3))
+	all_prefab_rects.append(rect_to_place.grow(5))
 	
 	prefab.queue_free()
 
@@ -476,10 +472,13 @@ func _force_carve_path() -> void:
 		atlas_coord = tilemap_target.get_cell_atlas_coords(coord)
 		if atlas_coord in TileLookup.FLOOR:
 			_temp_astar.set_point_solid(coord, false)
-		elif atlas_coord == TileLookup.ARENA_TRIGGER || atlas_coord == TileLookup.ENTRANCE:
+			_temp_astar.set_point_weight_scale(coord, 1)
+		elif atlas_coord == TileLookup.ARENA_TRIGGER || atlas_coord == TileLookup.ARENA_ENTRANCE:
 			_temp_astar.set_point_solid(coord, false)
+			_temp_astar.set_point_weight_scale(coord, 1)
 		elif atlas_coord in TileLookup.TREES:
-			_temp_astar.set_point_weight_scale(coord, 5.0)
+			_temp_astar.set_point_solid(coord, false)
+			_temp_astar.set_point_weight_scale(coord, 10.0)
 	
 	var cur_rect: Rect2i
 	var next_rect: Rect2i
@@ -489,15 +488,17 @@ func _force_carve_path() -> void:
 		cur_rect = all_prefab_rects[i]
 		next_rect = all_prefab_rects[i+1]
 		
-		points = _temp_astar.get_point_path(cur_rect.get_center(), next_rect.get_center())
+		points = _temp_astar.get_id_path(cur_rect.get_center(), next_rect.get_center())
+		#Logger.log("All points: %s" % points, true, true)
 		for point: Vector2i in points:
 			atlas_coord = tilemap_target.get_cell_atlas_coords(point)
 			if atlas_coord in TileLookup.TREES:
 				tilemap_target.set_cell(point, 1, TileLookup.GENERIC_FLOOR)
+				_temp_astar.set_point_weight_scale(point, 1.0)
 			
 			if render_in_progress:
+				camera.global_position = _temp_astar.get_point_position(point)
 				await get_tree().create_timer(0.05).timeout
-				camera.global_position = tilemap_target.to_global(tilemap_target.map_to_local(point))
 
 ## Clean up all excess walls.
 func _clean_up_walls() -> void:
@@ -550,6 +551,7 @@ func _set_up_astar() -> void:
 		atlas_coord = tilemap_target.get_cell_atlas_coords(coord)
 		if atlas_coord in TileLookup.FLOOR:
 			_astar.set_point_solid(coord, false)
-		elif atlas_coord == TileLookup.ARENA_TRIGGER || atlas_coord == TileLookup.ENTRANCE:
+		elif atlas_coord == TileLookup.ARENA_TRIGGER || atlas_coord == TileLookup.ARENA_ENTRANCE:
 			_astar.set_point_solid(coord, false)
+
 

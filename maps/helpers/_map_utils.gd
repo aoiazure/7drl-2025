@@ -29,3 +29,20 @@ static func get_valid_floor_neighbors(cell_position: Vector2i, map_cells: Array[
 
 static func distance_to(from: Vector2i, to: Vector2i) -> int:
 	return abs(to.x - from.x) + abs(to.y - from.y)
+
+static func get_circle_points(origin: Vector2i, radius: int) -> Array[Vector2i]:
+	var array: Array[Vector2i] = []
+	for y in range(-radius, radius + 1):
+		for x in range(-radius, radius+1):
+			if(x*x+y*y <= radius*radius):
+				array.append(Vector2i(origin.x + x, origin.y + y))
+	
+	return array
+
+
+
+
+
+
+
+

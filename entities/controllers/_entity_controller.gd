@@ -11,6 +11,7 @@ static var Lookup: Dictionary[StringName, EController] = {
 	"PInventoryController": PInventoryController.new(),
 	
 	"HitboxController": HitboxController.new(),
+	"BossController": BossController.new(),
 }
 
 

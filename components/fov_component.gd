@@ -49,8 +49,6 @@ func deserialize(data: Dictionary) -> void:
 
 
 func update_fov(map_data: MapData, origin: Vector2i, radius: int = vision_radius) -> void:
-	#_run_update_thread(map_data, origin, radius)
-	
 	if not _thread.is_started():
 		_thread.start(_run_update_thread.bind(map_data, origin, radius))
 	if not _thread.is_alive():
